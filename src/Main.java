@@ -40,7 +40,10 @@ public class Main {
             }
 
             if(seleccion == 1){
+                long startTime = System.nanoTime();
                 cargarDatos();
+                long endTime = System.nanoTime();
+                System.out.println("→ Carga de peliculas: " + (endTime - startTime)/1000000 + " milisegundos");
             } else if (seleccion == 2){
 //                ejectutarConsultas();
             } else if (seleccion == 3){

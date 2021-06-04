@@ -77,7 +77,9 @@ public class Movie {
         this.title = metadata[1];
         this.originalTitle = metadata[2];
         this.year = !metadata[3].isEmpty() ? parseInt(metadata[3]) : 0;
-        this.datePublished = new SimpleDateFormat("yyyy-MM-dd").parse(metadata[4]);
+        this.datePublished = metadata[4].length() == 4 ?
+                new SimpleDateFormat("yyyy").parse(metadata[4]) :
+                new SimpleDateFormat("yyyy-MM-dd").parse(metadata[4]);
         this.genre = listFromString(metadata[5]);
         this.duration = !metadata[6].isEmpty() ? parseInt(metadata[6]) : 0;
         this.country = listFromString(metadata[7]);
