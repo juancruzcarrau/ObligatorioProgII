@@ -1,9 +1,12 @@
 import TADs.listaSimple.ListaEnlazada;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
+import entities.Movie;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -11,6 +14,7 @@ import java.util.Scanner;
 public class Main {
 
     static Scanner scanner = new Scanner(System.in);
+    static ListaEnlazada<Movie> movies = new ListaEnlazada<>();
 
     public static void main(String[] args){
         while(true){
@@ -58,17 +62,18 @@ public class Main {
             e.printStackTrace();
         }
 
-
-    }
-
-
-    public ListaEnlazada<String> listFromArray (String[] array) {
-        ListaEnlazada<String> list = new ListaEnlazada<>();
-
-        for (String s : array) {
-            list.add(s);
+        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
+            String[] valores;
+            while((valores = csvReader.readNext()) != null){
+                Movie movie = new Movie(valores);
+                movies.add(movie);
+            }
+        } catch (IOException | CsvValidationException | ParseException e) {
+            //Nunca se deberia llegar aca
+            e.printStackTrace();
         }
 
-        return list;
+
     }
+
 }
