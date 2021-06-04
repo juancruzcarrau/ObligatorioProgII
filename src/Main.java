@@ -74,15 +74,23 @@ public class Main {
                         CastMember cm = new CastMember(valores);
                         CauseOfDeath dc = new CauseOfDeath(valores[10]);
 
+                        int count = 0;
                         for (int i = 0; i < deathCauses.size(); i++) {
-                            if (dc.equals(deathCauses.get(i))) {
-
+                            if (!dc.equals(deathCauses.get(i).getValue())) {
+                                count++;
                             }
-
+                            else if (dc.equals(deathCauses.get(i).getValue())) {
+                                cm.setCauseOfDeath(deathCauses.get(i).getValue());
+                            }
+                            else if (count == deathCauses.size()) {
+                                deathCauses.add(dc);
+                                cm.setCauseOfDeath(dc);
+                            }
                         }
 
                         people.add(cm);
                 }
+
                 catch (ParseException e) {
                     e.printStackTrace();
                 }
