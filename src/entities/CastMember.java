@@ -17,6 +17,7 @@ public class CastMember {
     private final String birthState;
     private final String birthCountry;
     private final String birthCity;
+    private final CauseOfDeath causeOfDeath;
     private final Date deathDate;
     private final String deathState;
     private final String deathCountry;
@@ -37,6 +38,7 @@ public class CastMember {
         this.birthState = metadata[7];
         this.birthCountry = metadata[8];
         this.birthCity = metadata[9];
+        this.causeOfDeath = new CauseOfDeath(metadata[10]);
         this.deathDate = new SimpleDateFormat("yyyy-MM-dd").parse(metadata[11]);
         this.deathState = metadata[13];
         this.deathCountry = metadata[14];
@@ -82,6 +84,10 @@ public class CastMember {
 
     public String getBirthCity() {
         return birthCity;
+    }
+
+    public CauseOfDeath getCauseOfDeath() {
+        return causeOfDeath;
     }
 
     public Date getDeathDate() {

@@ -1,14 +1,21 @@
 import TADs.listaSimple.ListaEnlazada;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
+import entities.CastMember;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
+
+    static ListaEnlazada<CastMember> people = new ListaEnlazada<>();
+
+
 
     static Scanner scanner = new Scanner(System.in);
 
@@ -47,7 +54,7 @@ public class Main {
         }
     }
 
-    private static void cargarDatos(){
+    private static void cargarDatos() {
 
         try(CSVReader csvReader = new CSVReader(new FileReader("dataset/IMDb movies.csv"))) {
             String[] valores = null;
@@ -58,9 +65,28 @@ public class Main {
             e.printStackTrace();
         }
 
+        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
+            String[] valores = null;
+
+            while((valores = csvReader.readNext()) != null) {
+
+                try {
+                        CastMember cm = new CastMember(valores);
+                        people.add(cm);
+                }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        catch (IOException | CsvValidationException e) {
+            //Nunca se deberia llegar aca
+            e.printStackTrace();
+        }
 
     }
-
 
     public ListaEnlazada<String> listFromArray (String[] array) {
         ListaEnlazada<String> list = new ListaEnlazada<>();
