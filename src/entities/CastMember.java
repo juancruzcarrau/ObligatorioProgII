@@ -32,22 +32,25 @@ public class CastMember {
         this.imdbNameId = metadata[0];
         this.name = metadata[1];
         this.birthName = metadata[2];
-        this.height = parseInt(metadata[3]);
+        this.height = !metadata[3].isEmpty() ? parseInt(metadata[3]) : 0;
         this.bio = metadata[4];
         this.birthDate = new SimpleDateFormat("yyyy-MM-dd").parse(metadata[6]);
         this.birthState = metadata[7];
         this.birthCountry = metadata[8];
         this.birthCity = metadata[9];
+
         this.causeOfDeath = new CauseOfDeath(metadata[10]);
+
         this.deathDate = new SimpleDateFormat("yyyy-MM-dd").parse(metadata[11]);
         this.deathState = metadata[13];
         this.deathCountry = metadata[14];
         this.deathCity = metadata[12];
         this.spousesString = metadata[16];
-        this.spouses = parseInt(metadata[17]);
-        this.divorces = parseInt(metadata[18]);
-        this.spousesWithChildren = parseInt(metadata[19]);
-        this.children = parseInt(metadata[20]);
+        this.spouses = !metadata[17].isEmpty() ? parseInt(metadata[17]) : 0;
+        this.divorces = !metadata[18].isEmpty() ? parseInt(metadata[18]) : 0;
+        this.spousesWithChildren = !metadata[19].isEmpty() ? parseInt(metadata[19]) : 0;
+        this.children = !metadata[20].isEmpty() ? parseInt(metadata[20]) : 0;
+
     }
 
     public String getImdbNameId() {

@@ -3,6 +3,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import entities.CastMember;
+import entities.CauseOfDeath;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,8 +15,7 @@ import java.util.Scanner;
 public class Main {
 
     static ListaEnlazada<CastMember> people = new ListaEnlazada<>();
-
-
+    static ListaEnlazada<CauseOfDeath> deathCauses = new ListaEnlazada<>();
 
     static Scanner scanner = new Scanner(System.in);
 
@@ -72,6 +72,15 @@ public class Main {
 
                 try {
                         CastMember cm = new CastMember(valores);
+                        CauseOfDeath dc = new CauseOfDeath(valores[10]);
+
+                        for (int i = 0; i < deathCauses.size(); i++) {
+                            if (dc.equals(deathCauses.get(i))) {
+
+                            }
+
+                        }
+
                         people.add(cm);
                 }
                 catch (ParseException e) {
