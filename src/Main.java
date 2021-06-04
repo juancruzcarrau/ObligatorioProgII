@@ -1,5 +1,9 @@
 import TADs.listaSimple.ListaEnlazada;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -8,7 +12,7 @@ public class Main {
 
     static Scanner scanner = new Scanner(System.in);
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         while(true){
             System.out.println("Seleccione la opción que desee:");
             System.out.println("\t1. Carga de datos");
@@ -32,7 +36,7 @@ public class Main {
             }
 
             if(seleccion == 1){
-//                cargarDatos();
+                cargarDatos();
             } else if (seleccion == 2){
 //                ejectutarConsultas();
             } else if (seleccion == 3){
@@ -41,6 +45,20 @@ public class Main {
                 throw new RuntimeException("Ha ocurrido un error. Seleccion no puede ser un nro distinto de 1, 2 o 3.");
             }
         }
+    }
+
+    private static void cargarDatos(){
+
+        try(CSVReader csvReader = new CSVReader(new FileReader("dataset/IMDb movies.csv"))) {
+            String[] valores = null;
+            while((valores = csvReader.readNext()) != null){
+            }
+        } catch (IOException | CsvValidationException e) {
+            //Nunca se deberia llegar aca
+            e.printStackTrace();
+        }
+
+
     }
 
 
