@@ -3,6 +3,8 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import entities.Movie;
+import entities.CastMember;
+import entities.CauseOfDeath;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,6 +16,9 @@ import java.util.Scanner;
 public class Main {
 
     static Scanner scanner = new Scanner(System.in);
+
+    static ListaEnlazada<CastMember> people = new ListaEnlazada<>();
+    static ListaEnlazada<CauseOfDeath> deathCauses = new ListaEnlazada<>();
     static ListaEnlazada<Movie> movies = new ListaEnlazada<>();
 
     public static void main(String[] args){
@@ -54,7 +59,7 @@ public class Main {
         }
     }
 
-    private static void cargarDatos(){
+    private static void cargarDatos() {
 
         try(CSVReader csvReader = new CSVReader(new FileReader("dataset/IMDb movies.csv"))) {
             String[] valores = null;
@@ -77,6 +82,46 @@ public class Main {
         }
 
 
+        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
+            String[] valores = null;
+
+            while((valores = csvReader.readNext()) != null) {
+
+                try {
+                        CastMember cm = new CastMember(valores);
+                        CauseOfDeath dc = new CauseOfDeath(valores[10]);
+
+                        int count = 0;
+                        for (int i = 0; i < deathCauses.size(); i++) {
+                            if (!dc.equals(deathCauses.get(i).getValue())) {
+                                count++;
+                            }
+                            else if (dc.equals(deathCauses.get(i).getValue())) {
+                                cm.setCauseOfDeath(deathCauses.get(i).getValue());
+                            }
+                            else if (count == deathCauses.size()) {
+                                deathCauses.add(dc);
+                                cm.setCauseOfDeath(dc);
+                            }
+                        }
+
+                        people.add(cm);
+                }
+
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        catch (IOException | CsvValidationException e) {
+            //Nunca se deberia llegar aca
+            e.printStackTrace();
+        }
+
     }
 
+
 }
+
