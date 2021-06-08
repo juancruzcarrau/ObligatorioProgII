@@ -2,6 +2,7 @@ import TADs.listaSimple.ListaEnlazada;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
+import entities.Movie;
 import entities.CastMember;
 import entities.CauseOfDeath;
 
@@ -14,10 +15,11 @@ import java.util.Scanner;
 
 public class Main {
 
+    static Scanner scanner = new Scanner(System.in);
+
     static ListaEnlazada<CastMember> people = new ListaEnlazada<>();
     static ListaEnlazada<CauseOfDeath> deathCauses = new ListaEnlazada<>();
-
-    static Scanner scanner = new Scanner(System.in);
+    static ListaEnlazada<Movie> movies = new ListaEnlazada<>();
 
     public static void main(String[] args){
         while(true){
@@ -43,7 +45,10 @@ public class Main {
             }
 
             if(seleccion == 1){
+                long startTime = System.nanoTime();
                 cargarDatos();
+                long endTime = System.nanoTime();
+                System.out.println("→ Carga de peliculas: " + (endTime - startTime)/1000000 + " milisegundos");
             } else if (seleccion == 2){
 //                ejectutarConsultas();
             } else if (seleccion == 3){
@@ -56,6 +61,7 @@ public class Main {
 
     private static void cargarDatos() {
 
+        //Template carga
         try(CSVReader csvReader = new CSVReader(new FileReader("dataset/IMDb movies.csv"))) {
             String[] valores = null;
             while((valores = csvReader.readNext()) != null){
@@ -65,53 +71,71 @@ public class Main {
             e.printStackTrace();
         }
 
-        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
-            String[] valores = null;
-
-            while((valores = csvReader.readNext()) != null) {
-
-                try {
-                        CastMember cm = new CastMember(valores);
-                        CauseOfDeath dc = new CauseOfDeath(valores[10]);
-
-                        int count = 0;
-                        for (int i = 0; i < deathCauses.size(); i++) {
-                            if (!dc.equals(deathCauses.get(i).getValue())) {
-                                count++;
-                            }
-                            else if (dc.equals(deathCauses.get(i).getValue())) {
-                                cm.setCauseOfDeath(deathCauses.get(i).getValue());
-                            }
-                            else if (count == deathCauses.size()) {
-                                deathCauses.add(dc);
-                                cm.setCauseOfDeath(dc);
-                            }
-                        }
-
-                        people.add(cm);
-                }
-
-                catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
+        //Carga de peliculas
+        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
+            String[] valores;
+            while((valores = csvReader.readNext()) != null){
+                Movie movie = new Movie(valores);
+                movies.add(movie);
             }
-        }
-
-        catch (IOException | CsvValidationException e) {
+        } catch (IOException | CsvValidationException | ParseException e) {
             //Nunca se deberia llegar aca
             e.printStackTrace();
         }
 
-    }
-
-    public ListaEnlazada<String> listFromArray (String[] array) {
-        ListaEnlazada<String> list = new ListaEnlazada<>();
-
-        for (String s : array) {
-            list.add(s);
+        //Carga de ratings a las peliculas
+        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
+            String[] valores;
+            while((valores = csvReader.readNext()) != null){
+                Movie movie = new Movie(valores);
+                movies.add(movie);
+            }
+        } catch (IOException | CsvValidationException | ParseException e) {
+            //Nunca se deberia llegar aca
+            e.printStackTrace();
         }
 
-        return list;
+        //Carga de castMembers y causas de muerte
+//        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
+//            String[] valores = null;
+//
+//            while((valores = csvReader.readNext()) != null) {
+//
+//                try {
+//                        CastMember cm = new CastMember(valores);
+//                        CauseOfDeath dc = new CauseOfDeath(valores[10]);
+//
+//                        int count = 0;
+//                        for (int i = 0; i < deathCauses.size(); i++) {
+//                            if (!dc.equals(deathCauses.get(i).getValue())) {
+//                                count++;
+//                            }
+//                            else if (dc.equals(deathCauses.get(i).getValue())) {
+//                                cm.setCauseOfDeath(deathCauses.get(i).getValue());
+//                            }
+//                            else if (count == deathCauses.size()) {
+//                                deathCauses.add(dc);
+//                                cm.setCauseOfDeath(dc);
+//                            }
+//                        }
+//
+//                        people.add(cm);
+//                }
+//
+//                catch (ParseException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        }
+//
+//        catch (IOException | CsvValidationException e) {
+//            //Nunca se deberia llegar aca
+//            e.printStackTrace();
+//        }
+
     }
+
+
 }
+
