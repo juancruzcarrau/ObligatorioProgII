@@ -61,6 +61,7 @@ public class Main {
 
     private static void cargarDatos() {
 
+        //Template carga
         try(CSVReader csvReader = new CSVReader(new FileReader("dataset/IMDb movies.csv"))) {
             String[] valores = null;
             while((valores = csvReader.readNext()) != null){
@@ -70,6 +71,7 @@ public class Main {
             e.printStackTrace();
         }
 
+        //Carga de peliculas
         try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
             String[] valores;
             while((valores = csvReader.readNext()) != null){
@@ -81,44 +83,56 @@ public class Main {
             e.printStackTrace();
         }
 
-
-        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
-            String[] valores = null;
-
-            while((valores = csvReader.readNext()) != null) {
-
-                try {
-                        CastMember cm = new CastMember(valores);
-                        CauseOfDeath dc = new CauseOfDeath(valores[10]);
-
-                        int count = 0;
-                        for (int i = 0; i < deathCauses.size(); i++) {
-                            if (!dc.equals(deathCauses.get(i).getValue())) {
-                                count++;
-                            }
-                            else if (dc.equals(deathCauses.get(i).getValue())) {
-                                cm.setCauseOfDeath(deathCauses.get(i).getValue());
-                            }
-                            else if (count == deathCauses.size()) {
-                                deathCauses.add(dc);
-                                cm.setCauseOfDeath(dc);
-                            }
-                        }
-
-                        people.add(cm);
-                }
-
-                catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
+        //Carga de ratings a las peliculas
+        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
+            String[] valores;
+            while((valores = csvReader.readNext()) != null){
+                Movie movie = new Movie(valores);
+                movies.add(movie);
             }
-        }
-
-        catch (IOException | CsvValidationException e) {
+        } catch (IOException | CsvValidationException | ParseException e) {
             //Nunca se deberia llegar aca
             e.printStackTrace();
         }
+
+        //Carga de castMembers y causas de muerte
+//        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
+//            String[] valores = null;
+//
+//            while((valores = csvReader.readNext()) != null) {
+//
+//                try {
+//                        CastMember cm = new CastMember(valores);
+//                        CauseOfDeath dc = new CauseOfDeath(valores[10]);
+//
+//                        int count = 0;
+//                        for (int i = 0; i < deathCauses.size(); i++) {
+//                            if (!dc.equals(deathCauses.get(i).getValue())) {
+//                                count++;
+//                            }
+//                            else if (dc.equals(deathCauses.get(i).getValue())) {
+//                                cm.setCauseOfDeath(deathCauses.get(i).getValue());
+//                            }
+//                            else if (count == deathCauses.size()) {
+//                                deathCauses.add(dc);
+//                                cm.setCauseOfDeath(dc);
+//                            }
+//                        }
+//
+//                        people.add(cm);
+//                }
+//
+//                catch (ParseException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        }
+//
+//        catch (IOException | CsvValidationException e) {
+//            //Nunca se deberia llegar aca
+//            e.printStackTrace();
+//        }
 
     }
 
