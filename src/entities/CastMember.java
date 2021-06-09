@@ -39,20 +39,20 @@ public class CastMember {
         this.birthName = metadata[2];
         this.height = !metadata[3].isEmpty() ? parseInt(metadata[3]) : 0;
         this.bio = metadata[4];
-        this.birthDate = new SimpleDateFormat("yyyy-MM-dd").parse(metadata[6]);
-        this.birthState = metadata[7];
-        this.birthCountry = metadata[8];
-        this.birthCity = metadata[9];
+        this.birthDate = !metadata[6].isEmpty() ? new SimpleDateFormat("yyyy-MM-dd").parse(metadata[6]) : null;
+        this.birthState = placeSeparator(metadata[7])[1];
+        this.birthCountry = placeSeparator(metadata[7])[2];
+        this.birthCity = placeSeparator(metadata[7])[0];
         this.causeOfDeath = null;
-        this.deathDate = new SimpleDateFormat("yyyy-MM-dd").parse(metadata[11]);
-        this.deathState = metadata[13];
-        this.deathCountry = metadata[14];
-        this.deathCity = metadata[12];
-        this.spousesString = metadata[16];
-        this.spouses = !metadata[17].isEmpty() ? parseInt(metadata[17]) : 0;
-        this.divorces = !metadata[18].isEmpty() ? parseInt(metadata[18]) : 0;
-        this.spousesWithChildren = !metadata[19].isEmpty() ? parseInt(metadata[19]) : 0;
-        this.children = !metadata[20].isEmpty() ? parseInt(metadata[20]) : 0;
+        this.deathDate = !metadata[9].isEmpty() ? new SimpleDateFormat("yyyy-MM-dd").parse(metadata[9]) : null;
+        this.deathState = placeSeparator(metadata[10])[1];
+        this.deathCountry = placeSeparator(metadata[10])[2];
+        this.deathCity = placeSeparator(metadata[10])[0];
+        this.spousesString = metadata[12];
+        this.spouses = !metadata[13].isEmpty() ? parseInt(metadata[13]) : 0;
+        this.divorces = !metadata[14].isEmpty() ? parseInt(metadata[14]) : 0;
+        this.spousesWithChildren = !metadata[15].isEmpty() ? parseInt(metadata[15]) : 0;
+        this.children = !metadata[16].isEmpty() ? parseInt(metadata[16]) : 0;
 
     }
 
@@ -130,6 +130,29 @@ public class CastMember {
 
     public int getChildren() {
         return children;
+    }
+
+    private String[] placeSeparator(String data) {
+        String[] info = new String[3];
+        String[] strArray = data.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+
+        if (strArray.length == 1) { // SI SOLO HAY INFO DE PAIS
+            info[0] = null;
+            info[1] = null;
+            info[2] = strArray[0];
+        }
+
+        else if (strArray.length == 2) { // INFO DE CIUDAD Y PAIS
+            info[0] = strArray[0];
+            info[1] = null;
+            info[2] = strArray[1];
+        }
+
+        else { // SI HAY INFO DE CIUDAD, ESTADO Y PAIS
+            info = strArray;
+        }
+
+        return info;
     }
 
 }

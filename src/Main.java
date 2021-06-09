@@ -45,10 +45,10 @@ public class Main {
             }
 
             if(seleccion == 1){
-                long startTime = System.nanoTime();
+                long startTime = System.currentTimeMillis();
                 cargarDatos();
-                long endTime = System.nanoTime();
-                System.out.println("→ Carga de peliculas: " + (endTime - startTime)/1000000 + " milisegundos");
+                long endTime = System.currentTimeMillis();
+                System.out.println("→ Carga de peliculas: " + (endTime - startTime) + " milisegundos");
             } else if (seleccion == 2){
 //                ejectutarConsultas();
             } else if (seleccion == 3){
@@ -96,43 +96,43 @@ public class Main {
         }
 
         //Carga de castMembers y causas de muerte
-//        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
-//            String[] valores = null;
-//
-//            while((valores = csvReader.readNext()) != null) {
-//
-//                try {
-//                        CastMember cm = new CastMember(valores);
-//                        CauseOfDeath dc = new CauseOfDeath(valores[10]);
-//
-//                        int count = 0;
-//                        for (int i = 0; i < deathCauses.size(); i++) {
-//                            if (!dc.equals(deathCauses.get(i).getValue())) {
-//                                count++;
-//                            }
-//                            else if (dc.equals(deathCauses.get(i).getValue())) {
-//                                cm.setCauseOfDeath(deathCauses.get(i).getValue());
-//                            }
-//                            else if (count == deathCauses.size()) {
-//                                deathCauses.add(dc);
-//                                cm.setCauseOfDeath(dc);
-//                            }
-//                        }
-//
-//                        people.add(cm);
-//                }
-//
-//                catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        }
-//
-//        catch (IOException | CsvValidationException e) {
-//            //Nunca se deberia llegar aca
-//            e.printStackTrace();
-//        }
+        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
+            String[] valores = null;
+
+            while((valores = csvReader.readNext()) != null) {
+
+                try {
+                        CastMember cm = new CastMember(valores);
+                        CauseOfDeath dc = new CauseOfDeath(valores[11]);
+
+                        int count = 0;
+                        for (int i = 0; i < deathCauses.size(); i++) {
+                            if (!dc.equals(deathCauses.get(i).getValue())) {
+                                count++;
+                            }
+                            else if (dc.equals(deathCauses.get(i).getValue())) {
+                                cm.setCauseOfDeath(deathCauses.get(i).getValue());
+                            }
+                            else if (count == deathCauses.size()) {
+                                deathCauses.add(dc);
+                                cm.setCauseOfDeath(dc);
+                            }
+                        }
+
+                        people.add(cm);
+                }
+
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        catch (IOException | CsvValidationException e) {
+            //Nunca se deberia llegar aca
+            e.printStackTrace();
+        }
 
     }
 
