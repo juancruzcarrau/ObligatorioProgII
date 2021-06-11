@@ -28,6 +28,7 @@ public class ClosedHashImpl<K, V> implements Hash<K, V> {
         for (int i = 0; i < tableHash.length; i++) {
             if (tableHash[i] != null && tableHash[i].getKey().equals(key)) {
                 System.out.println("Ya existe un objeto con la key: " + key + ".");
+                return;
             }
         }
 

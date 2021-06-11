@@ -39,21 +39,22 @@ public class CastMember {
         this.birthName = metadata[2];
         this.height = !metadata[3].isEmpty() ? parseInt(metadata[3]) : 0;
         this.bio = metadata[4];
-        this.birthDate = !metadata[6].isEmpty() ? new SimpleDateFormat("yyyy-MM-dd").parse(metadata[6]) : null;
-        this.birthState = placeSeparator(metadata[7])[1];
-        this.birthCountry = placeSeparator(metadata[7])[2];
-        this.birthCity = placeSeparator(metadata[7])[0];
+        this.birthDate = dateParser(metadata[6]);
+        String[] birth = placeSeparator(metadata[7]);
+        this.birthState = birth[1];
+        this.birthCountry = birth[2];
+        this.birthCity = birth[0];
         this.causeOfDeath = null;
-        this.deathDate = !metadata[9].isEmpty() ? new SimpleDateFormat("yyyy-MM-dd").parse(metadata[9]) : null;
-        this.deathState = placeSeparator(metadata[10])[1];
-        this.deathCountry = placeSeparator(metadata[10])[2];
-        this.deathCity = placeSeparator(metadata[10])[0];
+        this.deathDate = dateParser(metadata[9]);
+        String[] death = placeSeparator(metadata[10]);
+        this.deathState = death[1];
+        this.deathCountry = death[2];
+        this.deathCity = death[0];
         this.spousesString = metadata[12];
         this.spouses = !metadata[13].isEmpty() ? parseInt(metadata[13]) : 0;
         this.divorces = !metadata[14].isEmpty() ? parseInt(metadata[14]) : 0;
         this.spousesWithChildren = !metadata[15].isEmpty() ? parseInt(metadata[15]) : 0;
         this.children = !metadata[16].isEmpty() ? parseInt(metadata[16]) : 0;
-
     }
 
     public String getImdbNameId() {
@@ -136,23 +137,69 @@ public class CastMember {
         String[] info = new String[3];
         String[] strArray = data.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 
-        if (strArray.length == 1) { // SI SOLO HAY INFO DE PAIS
-            info[0] = null;
-            info[1] = null;
-            info[2] = strArray[0];
+        if (strArray.length == 1) { // SI SOLO HAY INFO DE PAIS O NO HAY INFO (String vacio)
+
+            if (strArray[0].isEmpty()) {
+                info[0] = null;
+                info[1] = null;
+                info[2] = null;
+            }
+            else {
+                info[0] = null;
+                info[1] = null;
+                info[2] = strArray[0].trim();
+            }
         }
 
         else if (strArray.length == 2) { // INFO DE CIUDAD Y PAIS
-            info[0] = strArray[0];
+            info[0] = strArray[0].trim();
             info[1] = null;
-            info[2] = strArray[1];
+            info[2] = strArray[1].trim();
         }
 
         else { // SI HAY INFO DE CIUDAD, ESTADO Y PAIS
-            info = strArray;
+            info[0] = strArray[0].trim();
+            info[1] = strArray[1].trim();
+            info[2] = strArray[2].trim();
         }
 
         return info;
+    }
+
+    private Date dateParser(String str) {
+        Date date = null;
+        String test = null;
+
+        if (str.isEmpty()) {
+            return null;
+        }
+
+        try {
+
+            if (str.length() == 10 && str.charAt(4) == '-') {
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(str);
+            }
+
+            else {
+                String prueba = str.replaceAll("[^0-9]","");
+                date = new SimpleDateFormat("yyyy").parse(prueba);
+
+                //String[] data = str.split("\\s");
+                //if (data[0].length() == 4) {
+                //    date = new SimpleDateFormat("yyyy").parse(data[0]);
+                //}
+                //else {
+                    // CASO c.
+                //}
+
+            }
+        }
+
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return date;
     }
 
 }
