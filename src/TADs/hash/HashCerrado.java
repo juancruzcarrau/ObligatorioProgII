@@ -29,15 +29,6 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
     @Override
     public void put(K key, T value) {
 
-//        //Primero se verifica que no exista la clave en el array
-//        for(NodoHashCerrado<K, T> nodo : table){
-//            if (nodo != null) {
-//                if(nodo.getKey().equals(key)){
-//                    throw new RuntimeException();
-//                }
-//            }
-//        }
-
         if(contains(key)){
             throw new RuntimeException();
         }
