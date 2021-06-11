@@ -1,11 +1,11 @@
 package TADs.hash;
 
-public class NodoHashAbierto<K, T>{
+public class NodoHashCerrado<K, T>{
 
     private K key;
     private T data;
 
-    public NodoHashAbierto(K key, T data) {
+    public NodoHashCerrado(K key, T data) {
         this.key = key;
         this.data = data;
     }

@@ -6,22 +6,22 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
 
     private static final double DEFAULT_LOAD_FACTOR = 0.75;
 
-    private NodoHashAbierto<K, T>[] table;
+    private NodoHashCerrado<K, T>[] table;
     private Boolean[] hasBeenDeleted;
     private int size;
     private int amountOfItems = 0;
     private double loadFactor = DEFAULT_LOAD_FACTOR;
 
     public HashCerrado(int size) {
-        this.table = new NodoHashAbierto[size];
+        this.table = new NodoHashCerrado[size];
         this.hasBeenDeleted = new Boolean[size];
         Arrays.fill(hasBeenDeleted, false);
         this.size = size;
     }
     public HashCerrado(int size, double loadFactor) {
-        this.table = new NodoHashAbierto[size];
+        this.table = new NodoHashCerrado[size];
         this.hasBeenDeleted = new Boolean[size];
-        Arrays.fill(hasBeenDeleted, true);
+        Arrays.fill(hasBeenDeleted, false);
         this.size = size;
         this.loadFactor = loadFactor;
     }
@@ -29,17 +29,21 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
     @Override
     public void put(K key, T value) {
 
-        //Primero se verifica que no exista la clave en el array
-        for(NodoHashAbierto<K, T> nodo : table){
-            if (nodo != null) {
-                if(nodo.getKey().equals(key)){
-                    throw new RuntimeException();
-                }
-            }
+//        //Primero se verifica que no exista la clave en el array
+//        for(NodoHashCerrado<K, T> nodo : table){
+//            if (nodo != null) {
+//                if(nodo.getKey().equals(key)){
+//                    throw new RuntimeException();
+//                }
+//            }
+//        }
+
+        if(contains(key)){
+            throw new RuntimeException();
         }
 
         //Implementacion lineal
-        int hash = key.hashCode() % size;
+        int hash = Math.abs(key.hashCode()) % size;
         int position = hash;
         int collisions = 1;
 
@@ -48,7 +52,7 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
             collisions++;
         }
 
-        table[position] = new NodoHashAbierto<>(key, value);
+        table[position] = new NodoHashCerrado<>(key, value);
         hasBeenDeleted[position] = false;   //Puede ser un sitio que habia sido previamente elminado
         amountOfItems++;
 
@@ -59,13 +63,13 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
 
     private void restructureHash() {
         int newSize = getNextPrime(size);
-        NodoHashAbierto<K, T>[] newTable = new NodoHashAbierto[newSize];
+        NodoHashCerrado<K, T>[] newTable = new NodoHashCerrado[newSize];
         Boolean[] newHasBeenDeleted = new Boolean[newSize];
         Arrays.fill(newHasBeenDeleted, false);
 
         //Implementacion lineal
-        for (NodoHashAbierto<K, T> nodo : table) {
-            int hash = nodo.getKey().hashCode() % newSize;
+        for (NodoHashCerrado<K, T> nodo : table) {
+            int hash = Math.abs(nodo.getKey().hashCode()) % newSize;
             int position = hash;
             int collisions = 1;
 
@@ -108,7 +112,7 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
     @Override
     public boolean contains(K key) {
 
-        int hash = key.hashCode() % size;
+        int hash = Math.abs(key.hashCode()) % size;
         int position = hash;
         int colisiones = 1;
 
@@ -152,7 +156,7 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
             throw new KeyNoExistenteRuntimeExeption();
         }
 
-        int hash = key.hashCode() % size;
+        int hash = Math.abs(key.hashCode()) % size;
         int position = hash;
         int colisiones = 1;
 
@@ -175,7 +179,7 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
             throw new KeyNoExistenteRuntimeExeption();
         }
 
-        int hash = key.hashCode() % size;
+        int hash = Math.abs(key.hashCode()) % size;
         int position = hash;
         int colisiones = 1;
 
