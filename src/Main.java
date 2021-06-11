@@ -99,47 +99,45 @@ public class Main {
             e.printStackTrace();
         }
 
-        Movie movie = movies.get(1).getValue();
-        System.out.println(movie);
-
         //Carga de castMembers y causas de muerte
-//        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
-//            String[] valores = null;
-//
-//            while((valores = csvReader.readNext()) != null) {
-//
-//                try {
-//                        CastMember cm = new CastMember(valores);
-//                        CauseOfDeath dc = new CauseOfDeath(valores[10]);
-//
-//                        int count = 0;
-//                        for (int i = 0; i < deathCauses.size(); i++) {
-//                            if (!dc.equals(deathCauses.get(i).getValue())) {
-//                                count++;
-//                            }
-//                            else if (dc.equals(deathCauses.get(i).getValue())) {
-//                                cm.setCauseOfDeath(deathCauses.get(i).getValue());
-//                            }
-//                            else if (count == deathCauses.size()) {
-//                                deathCauses.add(dc);
-//                                cm.setCauseOfDeath(dc);
-//                            }
-//                        }
-//
-//                        people.add(cm);
-//                }
-//
-//                catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        }
-//
-//        catch (IOException | CsvValidationException e) {
-//            //Nunca se deberia llegar aca
-//            e.printStackTrace();
-//        }
+        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
+            String[] valores = null;
+
+            while((valores = csvReader.readNext()) != null) {
+
+                try {
+                        CastMember cm = new CastMember(valores);
+                        CauseOfDeath dc = new CauseOfDeath(valores[11]);
+
+                        int count = 0;
+                        for (int i = 0; i < deathCauses.size(); i++) {
+                            if (!dc.equals(deathCauses.get(i).getValue())) {
+                                count++;
+                            }
+                            else if (dc.equals(deathCauses.get(i).getValue())) {
+                                cm.setCauseOfDeath(deathCauses.get(i).getValue());
+                            }
+                            else if (count == deathCauses.size()) {
+                                deathCauses.add(dc);
+                                cm.setCauseOfDeath(dc);
+                            }
+                        }
+
+                        people.add(cm);
+                }
+
+                catch (ParseException e) {
+                    e.printStackTrace();
+
+                }
+
+            }
+        }
+
+        catch (IOException | CsvValidationException e) {
+            //Nunca se deberia llegar aca
+            e.printStackTrace();
+        }
 
     }
 
