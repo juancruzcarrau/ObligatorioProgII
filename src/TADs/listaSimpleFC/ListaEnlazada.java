@@ -1,4 +1,4 @@
-package TADs.listaSimple;
+package TADs.listaSimpleFC;
 
 import TADs.Lista;
 
@@ -102,19 +102,14 @@ public class ListaEnlazada<T> implements Lista<T> {
 
     @Override
     public Nodo<T> get(int position) throws IndexOutOfBoundsException {
+
         if (position <= 0 || position > size) {
             throw new IndexOutOfBoundsException();
-        }
-
-        else if (position == 1) {
+        } else if (position == 1) {
             return first;
-        }
-
-        else if (position == size) {
+        } else if (position == size) {
             return last;
-        }
-
-        else {
+        } else {
 
             Nodo<T> temp = first;
             int i = 1;

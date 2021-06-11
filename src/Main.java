@@ -1,10 +1,12 @@
-import TADs.listaSimple.ListaEnlazada;
+import TADs.hash.HashCerrado;
+import TADs.listaSimpleFC.ListaEnlazada;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import entities.Movie;
 import entities.CastMember;
 import entities.CauseOfDeath;
+import entities.MovieRating;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -20,6 +22,7 @@ public class Main {
     static ListaEnlazada<CastMember> people = new ListaEnlazada<>();
     static ListaEnlazada<CauseOfDeath> deathCauses = new ListaEnlazada<>();
     static ListaEnlazada<Movie> movies = new ListaEnlazada<>();
+    static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(86000,1);
 
     public static void main(String[] args){
         while(true){
@@ -71,12 +74,18 @@ public class Main {
             e.printStackTrace();
         }
 
-        //Carga de peliculas
+//      Carga de peliculas
+        int cant = 0;
         try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
             String[] valores;
             while((valores = csvReader.readNext()) != null){
                 Movie movie = new Movie(valores);
+                moviesHash.put(movie.getImbdTitleId(), movie);
                 movies.add(movie);
+                if (cant % 1000 == 0) {
+                    System.out.println(cant);
+                }
+                cant++;
             }
         } catch (IOException | CsvValidationException | ParseException e) {
             //Nunca se deberia llegar aca
@@ -84,13 +93,12 @@ public class Main {
         }
 
         //Carga de ratings a las peliculas
-        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
+        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb ratings.csv")).withSkipLines(1).build()) {
             String[] valores;
             while((valores = csvReader.readNext()) != null){
-                Movie movie = new Movie(valores);
-                movies.add(movie);
+                MovieRating rating = new MovieRating(valores);
             }
-        } catch (IOException | CsvValidationException | ParseException e) {
+        } catch (IOException | CsvValidationException e) {
             //Nunca se deberia llegar aca
             e.printStackTrace();
         }

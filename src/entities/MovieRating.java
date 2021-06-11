@@ -1,6 +1,9 @@
 package entities;
 
-import TADs.listaSimple.ListaEnlazada;
+import TADs.listaSimpleFC.ListaEnlazada;
+
+import static java.lang.Float.parseFloat;
+import static java.lang.Integer.parseInt;
 
 public class MovieRating {
 
@@ -16,6 +19,14 @@ public class MovieRating {
         this.meanVote = meanVote;
         this.medianVote = medianVote;
         this.votesRating = votesRating;
+    }
+
+    public MovieRating(String[] metadata) {
+        this.weightedAverage = parseFloat(metadata[1]);
+        this.totalVotes = parseInt(metadata[2]);
+        this.meanVote = parseFloat(metadata[3]);
+        this.medianVote = parseFloat(metadata[4]);
+
     }
 
     public float getWeightedAverage() {
