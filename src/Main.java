@@ -48,10 +48,10 @@ public class Main {
             }
 
             if(seleccion == 1){
-                long startTime = System.nanoTime();
+                long startTime = System.currentTimeMillis();
                 cargarDatos();
-                long endTime = System.nanoTime();
-                System.out.println("→ Carga de peliculas: " + (endTime - startTime)/1000000 + " milisegundos");
+                long endTime = System.currentTimeMillis();
+                System.out.println("→ Tiempo de carga: " + (endTime - startTime) + " milisegundos");
             } else if (seleccion == 2){
 //                ejectutarConsultas();
             } else if (seleccion == 3){
@@ -75,17 +75,12 @@ public class Main {
         }
 
 //      Carga de peliculas
-        int cant = 0;
         try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
             String[] valores;
             while((valores = csvReader.readNext()) != null){
                 Movie movie = new Movie(valores);
                 moviesHash.put(movie.getImbdTitleId(), movie);
                 movies.add(movie);
-                if (cant % 1000 == 0) {
-                    System.out.println(cant);
-                }
-                cant++;
             }
         } catch (IOException | CsvValidationException | ParseException e) {
             //Nunca se deberia llegar aca
@@ -97,11 +92,15 @@ public class Main {
             String[] valores;
             while((valores = csvReader.readNext()) != null){
                 MovieRating rating = new MovieRating(valores);
+                moviesHash.get(valores[0]).setMovieRating(rating);
             }
         } catch (IOException | CsvValidationException e) {
             //Nunca se deberia llegar aca
             e.printStackTrace();
         }
+
+        Movie movie = movies.get(1).getValue();
+        System.out.println(movie);
 
         //Carga de castMembers y causas de muerte
 //        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
