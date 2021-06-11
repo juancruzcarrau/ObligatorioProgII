@@ -1,6 +1,9 @@
 package entities;
 
-import TADs.listaSimple.ListaEnlazada;
+import TADs.listaSimpleFC.ListaEnlazada;
+
+import static java.lang.Float.parseFloat;
+import static java.lang.Integer.parseInt;
 
 public class MovieRating {
 
@@ -8,14 +11,24 @@ public class MovieRating {
     private final int totalVotes;
     private final float meanVote;
     private final float medianVote;
-    private ListaEnlazada<Integer> votesRating;
+    private ListaEnlazada<Rating> votesRating;
 
-    public MovieRating(float weightedAverage, int totalVotes, float meanVote, float medianVote, ListaEnlazada<Integer> votesRating) {
-        this.weightedAverage = weightedAverage;
-        this.totalVotes = totalVotes;
-        this.meanVote = meanVote;
-        this.medianVote = medianVote;
-        this.votesRating = votesRating;
+    public MovieRating(String[] metadata) {
+        this.weightedAverage = parseFloat(metadata[1]);
+        this.totalVotes = parseInt(metadata[2]);
+        this.meanVote = parseFloat(metadata[3]);
+        this.medianVote = parseFloat(metadata[4]);
+
+        ListaEnlazada<Rating> listaRatings = new ListaEnlazada<>();
+
+        for (int i = 15; i <= 48; i = i + 2) {
+            if(!metadata[i].isEmpty() && !metadata[i+1].isEmpty()){
+                Rating rating = new Rating(parseFloat(metadata[i]), parseFloat(metadata[i+1]));
+                listaRatings.add(rating);
+            }
+        }
+
+        this.votesRating = listaRatings;
     }
 
     public float getWeightedAverage() {
@@ -34,7 +47,7 @@ public class MovieRating {
         return medianVote;
     }
 
-    public ListaEnlazada<Integer> getVotesRating() {
+    public ListaEnlazada<Rating> getVotesRating() {
         return votesRating;
     }
 

@@ -1,6 +1,6 @@
 package entities;
 
-import TADs.listaSimple.ListaEnlazada;
+import TADs.listaSimpleFC.ListaEnlazada;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -186,6 +186,10 @@ public class Movie {
 
     public float getReviewsFromCritics() {
         return reviewsFromCritics;
+    }
+
+    public MovieRating getMovieRating() {
+        return movieRating;
     }
 
     public void setMovieRating(MovieRating movieRating) {
