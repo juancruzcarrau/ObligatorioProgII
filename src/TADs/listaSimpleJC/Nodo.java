@@ -1,23 +1,23 @@
 package TADs.listaSimpleJC;
 
-public class Nodo {
+public class Nodo<T> {
 
-    private Object object;
-    private Nodo nodoSiguiente = null;
+    private final T object;
+    private Nodo<T> nodoSiguiente = null;
 
-    public Nodo(Object object) {
+    public Nodo(T object) {
         this.object = object;
     }
 
-    public Object getObject() {
+    public T getObject() {
         return object;
     }
 
-    public Nodo getNodoSiguiente() {
+    public Nodo<T> getNodoSiguiente() {
         return nodoSiguiente;
     }
 
-    public void setNodoSiguiente(Nodo nodoSiguiente) {
+    public void setNodoSiguiente(Nodo<T> nodoSiguiente) {
         this.nodoSiguiente = nodoSiguiente;
     }
 }

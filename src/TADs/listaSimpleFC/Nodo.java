@@ -1,4 +1,4 @@
-package TADs.listaSimple;
+package TADs.listaSimpleFC;
 
 public class Nodo<T> {
 

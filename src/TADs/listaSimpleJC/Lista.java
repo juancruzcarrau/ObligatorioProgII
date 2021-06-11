@@ -1,11 +1,11 @@
 package TADs.listaSimpleJC;
 
-public interface Lista {
+public interface Lista<T> {
 
-    void add(Object value);
+    void add(T value);
 
     void remove(int position) throws NodoNoExistenteException;
 
-    Object get(int position) throws NodoNoExistenteException;
+    T get(int position) throws NodoNoExistenteException;
 
 }

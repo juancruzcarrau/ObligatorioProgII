@@ -1,9 +1,9 @@
 package TADs.listaSimpleJC;
 
 
-public class ListaEnlazada implements Lista {
+public class ListaEnlazada<T> implements Lista<T> {
 
-    private Nodo nodoRaiz;
+    private Nodo<T> nodoRaiz;
     private int size = 0;
 
     public ListaEnlazada() {
@@ -14,16 +14,16 @@ public class ListaEnlazada implements Lista {
     }
 
     @Override
-    public void add(Object value) {
+    public void add(T value) {
         if (nodoRaiz == null) {
             //En caso de que se esta agregando el primer elemento
-            nodoRaiz = new Nodo(value);
+            nodoRaiz = new Nodo<>(value);
         } else {
-            Nodo ultimoNodo = nodoRaiz;
+            Nodo<T> ultimoNodo = nodoRaiz;
             while(ultimoNodo.getNodoSiguiente() != null){
                 ultimoNodo = ultimoNodo.getNodoSiguiente();
             }
-            Nodo nuevoNodo = new Nodo(value);
+            Nodo<T> nuevoNodo = new Nodo<>(value);
             ultimoNodo.setNodoSiguiente(nuevoNodo);
         }
         size++;
@@ -33,7 +33,7 @@ public class ListaEnlazada implements Lista {
     public void remove(int position) throws NodoNoExistenteException {
         if (nodoRaiz != null) {
             int i = 0;
-            Nodo nodoActual = nodoRaiz;
+            Nodo<T> nodoActual = nodoRaiz;
             while(nodoActual.getNodoSiguiente() != null && i < position - 1){
                 nodoActual = nodoActual.getNodoSiguiente();
                 i++;
@@ -56,9 +56,9 @@ public class ListaEnlazada implements Lista {
     }
 
     @Override
-    public Object get(int position) throws NodoNoExistenteException {
+    public T get(int position) throws NodoNoExistenteException {
         int i = 0;
-        Nodo nodoActual = nodoRaiz;
+        Nodo<T> nodoActual = nodoRaiz;
         while(nodoActual != null && i < position){
             nodoActual = nodoActual.getNodoSiguiente();
             i++;
@@ -71,8 +71,8 @@ public class ListaEnlazada implements Lista {
         return nodoActual.getObject();
     }
 
-    public void addFirst(Object object) {
-        Nodo nuevoNodo = new Nodo(object);
+    public void addFirst(T object) {
+        Nodo<T> nuevoNodo = new Nodo<>(object);
         nodoRaiz.setNodoSiguiente(this.nodoRaiz);
         this.nodoRaiz = nuevoNodo;
     }
@@ -80,7 +80,7 @@ public class ListaEnlazada implements Lista {
     //    void addLast(Object object);       //La funcion add hace lo mismo que add()
 
     public void print(){
-        Nodo nodoActual = nodoRaiz;
+        Nodo<T> nodoActual = nodoRaiz;
         while(nodoActual != null) {
             System.out.println(nodoActual.getObject());
             nodoActual = nodoActual.getNodoSiguiente();
@@ -90,7 +90,7 @@ public class ListaEnlazada implements Lista {
     }
 
     public boolean contains(Object object){
-        Nodo nodoActual = nodoRaiz;
+        Nodo<T> nodoActual = nodoRaiz;
         while(nodoActual != null){
             if(nodoActual.getObject().equals(object)){
                 return true;
@@ -101,9 +101,9 @@ public class ListaEnlazada implements Lista {
         return false;
     }
 
-    public ListaEnlazada objetosEnAmbos(ListaEnlazada lista) throws NodoNoExistenteException {
-        Nodo nodoUltimo = nodoRaiz;
-        ListaEnlazada listaDeRepetidos = new ListaEnlazada();
+    public ListaEnlazada<T> objetosEnAmbos(ListaEnlazada<T> lista) throws NodoNoExistenteException {
+        Nodo<T> nodoUltimo = nodoRaiz;
+        ListaEnlazada<T> listaDeRepetidos = new ListaEnlazada<>();
 
         while(nodoUltimo != null){
             for(int i = 0; i < lista.size(); i++){
