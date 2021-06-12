@@ -48,6 +48,10 @@ public class MovieCastMember {
 
     private ListaEnlazada<String> listFromString (String s) {
         ListaEnlazada<String> list = new ListaEnlazada<>();
+
+        s = s.replaceAll("\\[", "").replaceAll("\\]",""); // SACO [ ]
+        s = s.replaceAll("\"","");
+
         String[] array = s.split(",");
 
         for (String st : array) {

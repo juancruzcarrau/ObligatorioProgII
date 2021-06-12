@@ -72,7 +72,7 @@ public class Main {
             e.printStackTrace();
         }
 
-//      Carga de peliculas
+        //Carga de peliculas
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
             String[] valores;
 
@@ -99,10 +99,6 @@ public class Main {
         }
 
         //Carga de castMembers y causas de muerte
-
-
-
-        // ANTERIOR CON CSV READER:
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
             String[] valores = null;
 
