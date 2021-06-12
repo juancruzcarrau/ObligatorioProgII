@@ -5,10 +5,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import entities.*;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.InputMismatchException;
@@ -106,7 +103,7 @@ public class Main {
 
 
         // ANTERIOR CON CSV READER:
-        /*try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
+        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
             String[] valores = null;
 
             while ((valores = csvReader.readNext()) != null) {
@@ -142,58 +139,13 @@ public class Main {
             //Nunca se deberia llegar aca
             e.printStackTrace();
         }
-*/
-        // ACTUAL CON BUFF. READER
-        /*try {
-            String[] valores;
-            String strCurrentLine;
-            BufferedReader objReader;
-            objReader = new BufferedReader(new FileReader ("dataset/IMDb names.csv"));
-            objReader.readLine(); // SALTEO DEL CABEZAL
-
-            while ((strCurrentLine = objReader.readLine()) != null) {
-
-                try {
-                    valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-                    CastMember cm = new CastMember(valores);
-                    CauseOfDeath dc = null;
-
-                    for (int i = 1; i < deathCauses.size() + 1; i++) {
-                        if (deathCauses.get(i).getValue().getName().equals(valores[11])) {
-                            dc = deathCauses.get(i).getValue();
-                            break;
-                        }
-                    }
-
-                    if (dc != null) {
-                        cm.setCauseOfDeath(dc);
-                    }
-                    else {
-                        dc = new CauseOfDeath(valores[11]);
-                        deathCauses.add(dc);
-                        cm.setCauseOfDeath(dc);
-                    }
-
-                    people.add(cm);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-
-        catch (Exception e) {
-            //Nunca se deberia llegar aca
-            e.printStackTrace();
-        }*/
 
         //Carga de MovieCastMembers
         try {
             String[] valores;
             String strCurrentLine;
             BufferedReader objReader;
-            objReader = new BufferedReader(new FileReader ("dataset/IMDb title_principals.csv"));
+            objReader = new BufferedReader(new InputStreamReader(new FileInputStream("dataset/IMDb title_principals.csv"), "UTF-8"));
             objReader.readLine(); // SALTEO DEL CABEZAL
             while ((strCurrentLine = objReader.readLine()) != null) {
                 valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -207,7 +159,7 @@ public class Main {
         }
 
         System.out.println("size lista peliculas: "+movies.size() + " y tiene que dar 85855");
-        System.out.println("size lista castMembers: "+people.size() + " y tiene que dar 297710");
+        System.out.println("size lista castMembers: "+people.size() + " y tiene que dar 297705");
         System.out.println("size lista movieCastMembers: "+characters.size() + " y tiene que dar 835493");
     }
 
