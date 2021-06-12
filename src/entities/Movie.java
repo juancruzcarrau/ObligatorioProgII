@@ -76,10 +76,8 @@ public class Movie {
         this.imbdTitleId = metadata[0];
         this.title = metadata[1];
         this.originalTitle = metadata[2];
-        this.year = !metadata[3].isEmpty() ? parseInt(metadata[3]) : 0;
-        this.datePublished = metadata[4].length() == 4 ?
-                new SimpleDateFormat("yyyy").parse(metadata[4]) :
-                new SimpleDateFormat("yyyy-MM-dd").parse(metadata[4]);
+        this.year = !metadata[3].isEmpty() ? parseInt(metadata[3].replaceAll("[^0-9]","")) : 0;
+        this.datePublished = parseDate(metadata[4]);
         this.genre = listFromString(metadata[5]);
         this.duration = !metadata[6].isEmpty() ? parseInt(metadata[6]) : 0;
         this.country = listFromString(metadata[7]);
@@ -97,6 +95,25 @@ public class Movie {
         this.metaScore = !metadata[19].isEmpty() ? parseFloat(metadata[19]) : 0;
         this.reviewsFromUsers = !metadata[20].isEmpty() ? parseFloat(metadata[20]) : 0;
         this.reviewsFromCritics = !metadata[21].isEmpty() ? parseFloat(metadata[21]) : 0;
+    }
+
+    private Date parseDate(String date) throws ParseException {
+
+        if(date.length() == 4){
+            return new SimpleDateFormat("yyyy").parse(date);
+        } else {
+            String onlyNumbers = date.replaceAll("[^0-9]","");
+            if (onlyNumbers.length() == 4){
+                return new SimpleDateFormat("yyyy").parse(onlyNumbers);
+            } else {
+                if (date.contains("-")){
+                    return new SimpleDateFormat("yyyy-MM-dd").parse(date);
+                } else {
+                    return new SimpleDateFormat("dd/MM/yyyy").parse(date);
+                }
+            }
+        }
+
     }
 
 
