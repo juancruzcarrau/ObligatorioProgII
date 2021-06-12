@@ -3,11 +3,9 @@ import TADs.listaSimpleFC.ListaEnlazada;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
-import entities.Movie;
-import entities.CastMember;
-import entities.CauseOfDeath;
-import entities.MovieRating;
+import entities.*;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
@@ -65,9 +63,9 @@ public class Main {
     private static void cargarDatos() {
 
         //Template carga
-        try(CSVReader csvReader = new CSVReader(new FileReader("dataset/IMDb movies.csv"))) {
+        try (CSVReader csvReader = new CSVReader(new FileReader("dataset/IMDb movies.csv"))) {
             String[] valores = null;
-            while((valores = csvReader.readNext()) != null){
+            while ((valores = csvReader.readNext()) != null) {
             }
         } catch (IOException | CsvValidationException e) {
             //Nunca se deberia llegar aca
@@ -75,9 +73,9 @@ public class Main {
         }
 
 //      Carga de peliculas
-        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
+        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
             String[] valores;
-            while((valores = csvReader.readNext()) != null){
+            while ((valores = csvReader.readNext()) != null) {
                 Movie movie = new Movie(valores);
                 moviesHash.put(movie.getImbdTitleId(), movie);
                 movies.add(movie);
@@ -88,9 +86,9 @@ public class Main {
         }
 
         //Carga de ratings a las peliculas
-        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb ratings.csv")).withSkipLines(1).build()) {
+        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb ratings.csv")).withSkipLines(1).build()) {
             String[] valores;
-            while((valores = csvReader.readNext()) != null){
+            while ((valores = csvReader.readNext()) != null) {
                 MovieRating rating = new MovieRating(valores);
                 moviesHash.get(valores[0]).setMovieRating(rating);
             }
@@ -100,47 +98,54 @@ public class Main {
         }
 
         //Carga de castMembers y causas de muerte
-        try(CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
+        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
             String[] valores = null;
 
-            while((valores = csvReader.readNext()) != null) {
+            while ((valores = csvReader.readNext()) != null) {
 
                 try {
-                        CastMember cm = new CastMember(valores);
-                        CauseOfDeath dc = new CauseOfDeath(valores[11]);
+                    CastMember cm = new CastMember(valores);
+                    CauseOfDeath dc = new CauseOfDeath(valores[11]);
 
-                        int count = 0;
-                        for (int i = 0; i < deathCauses.size(); i++) {
-                            if (!dc.equals(deathCauses.get(i).getValue())) {
-                                count++;
-                            }
-                            else if (dc.equals(deathCauses.get(i).getValue())) {
-                                cm.setCauseOfDeath(deathCauses.get(i).getValue());
-                            }
-                            else if (count == deathCauses.size()) {
-                                deathCauses.add(dc);
-                                cm.setCauseOfDeath(dc);
-                            }
+                    int count = 0;
+                    for (int i = 0; i < deathCauses.size(); i++) {
+                        if (!dc.equals(deathCauses.get(i).getValue())) {
+                            count++;
+                        } else if (dc.equals(deathCauses.get(i).getValue())) {
+                            cm.setCauseOfDeath(deathCauses.get(i).getValue());
+                        } else if (count == deathCauses.size()) {
+                            deathCauses.add(dc);
+                            cm.setCauseOfDeath(dc);
                         }
+                    }
 
-                        people.add(cm);
-                }
-
-                catch (ParseException e) {
+                    people.add(cm);
+                } catch (ParseException e) {
                     e.printStackTrace();
 
                 }
 
             }
-        }
-
-        catch (IOException | CsvValidationException e) {
+        } catch (IOException | CsvValidationException e) {
             //Nunca se deberia llegar aca
             e.printStackTrace();
         }
 
-    }
+        //Carga de MovieCastMembers
+        String[] prueba;
 
+        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb title_principals.csv")).withSkipLines(1).build()) {
+            String[] valores;
+            while ((valores = csvReader.readNext()) != null) {
+                prueba = valores;
+                MovieCastMember movieCM = new MovieCastMember(valores);
+            }
+        }
+        catch (IOException | CsvValidationException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }
 
