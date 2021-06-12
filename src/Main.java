@@ -22,6 +22,8 @@ public class Main {
     static ListaEnlazada<Movie> movies = new ListaEnlazada<>();
     static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(86000,1);
 
+    static ListaEnlazada<MovieCastMember> characters = new ListaEnlazada<>();
+
     public static void main(String[] args){
         while(true){
             System.out.println("Seleccione la opción que desee:");
@@ -137,9 +139,12 @@ public class Main {
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb title_principals.csv")).withSkipLines(1).build()) {
             String[] valores;
             while ((valores = csvReader.readNext()) != null) {
-                prueba = valores;
                 MovieCastMember movieCM = new MovieCastMember(valores);
+                characters.add(movieCM);
             }
+            System.out.println("size lista movieCastMembers: "+characters.size());  // tiene que dar 835494
+            System.out.println("size lista peliculas: "+movies.size());      // tiene que dar 85855
+            System.out.println("size lista castMembers: "+people.size());      // tiene que dar 314483
         }
         catch (IOException | CsvValidationException e) {
             e.printStackTrace();
