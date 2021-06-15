@@ -47,6 +47,17 @@ public class ArrayListImpl<T extends Comparable<T>> implements ArrayList<T>{
         return 0;
     }
 
+    @Override
+    public boolean contains(T value) {
+        for(T element : array){
+            if(value.equals(element)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Sorts array by merge Sort
      */
