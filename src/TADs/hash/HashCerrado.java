@@ -38,10 +38,16 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
         int position = hash;
         int collisions = 1;
 
-        while(table[position] != null){
-            position = (hash + collisions) % size;
-            collisions++;
+        try {
+            while(table[position] != null){
+                position = (hash + collisions) % size;
+                collisions++;
+            }
         }
+        catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+
 
         table[position] = new NodoHashCerrado<>(key, value);
         hasBeenDeleted[position] = false;   //Puede ser un sitio que habia sido previamente elminado

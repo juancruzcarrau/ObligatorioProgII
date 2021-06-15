@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public class CauseOfDeath {
 
+    private int ocurrencia = 1;
+
     private final String name;
 
     public CauseOfDeath(String name) {
@@ -12,6 +14,14 @@ public class CauseOfDeath {
 
     public String getName() {
         return name;
+    }
+
+    public int getOcurrencia() {
+        return ocurrencia;
+    }
+
+    public void incrementOcurrencia() {
+        this.ocurrencia++;
     }
 
     @Override
