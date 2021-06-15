@@ -7,4 +7,6 @@ public interface ArrayList<T extends Comparable<T>> {
     T get(int index);
 
     int size();
+
+    int remove(int index);
 }

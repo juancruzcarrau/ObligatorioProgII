@@ -41,6 +41,12 @@ public class ArrayListImpl<T extends Comparable<T>> implements ArrayList<T>{
         return last;
     }
 
+    @Override
+    public int remove(int index) {
+        //No hay necesidad de implementarlo en este momento
+        return 0;
+    }
+
     /**
      * Sorts array by merge Sort
      */
