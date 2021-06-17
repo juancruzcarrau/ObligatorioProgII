@@ -1,6 +1,6 @@
 package TADs.arrayList;
 
-public interface ArrayList<T extends Comparable<T>> {
+public interface ArrayList<T> {
 
     void add(T value);
 
