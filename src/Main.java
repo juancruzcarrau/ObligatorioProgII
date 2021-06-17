@@ -1,3 +1,4 @@
+import TADs.arrayList.ArrayListImpl;
 import TADs.hash.HashCerrado;
 import TADs.listaSimpleFC.ListaEnlazada;
 import com.opencsv.CSVReader;
@@ -18,17 +19,17 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
 
     // cast members
-    static ListaEnlazada<CastMember> peopleList = new ListaEnlazada<>();
+    static ArrayListImpl<CastMember> peopleList = new ArrayListImpl<>(300000);
     static HashCerrado<String,CastMember> peopleHash = new HashCerrado<>(400000, 1);
-    static ListaEnlazada<CauseOfDeath> deathCauses = new ListaEnlazada<>();
+    static ArrayListImpl<CauseOfDeath> deathCauses = new ArrayListImpl<>(10000);
 
     // movies
     static ListaEnlazada<Movie> movies = new ListaEnlazada<>();
     static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(115000,1);
 
     // movie cast members
-    static ListaEnlazada<MovieCastMember> characters = new ListaEnlazada<>();
-    static HashCerrado<String, ListaEnlazada<MovieCastMember>> peopleByCountry = new HashCerrado<>(300, 0.75);
+    static ArrayListImpl<MovieCastMember> characters = new ArrayListImpl<>(850000);
+    static HashCerrado<String, ArrayListImpl<MovieCastMember>> peopleByCountry = new HashCerrado<>(300, 0.75);
 
     public static void main(String[] args){
         while(true){
@@ -99,7 +100,7 @@ public class Main {
             if(seleccionConsulta == 1){
 //                primeraConsulta();
             } else if (seleccionConsulta == 2){
-//                segundaConsulta();
+                segundaConsulta();
             } else if (seleccionConsulta == 3){
 //                terceraConsulta();
             } else if (seleccionConsulta == 4){
@@ -155,7 +156,7 @@ public class Main {
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
             String[] valores = null;
 
-            int countttt = 0;
+            //int countttt = 0;
 
             while ((valores = csvReader.readNext()) != null) {
 
@@ -163,9 +164,9 @@ public class Main {
                     CastMember cm = new CastMember(valores);
                     CauseOfDeath dc = null;
 
-                    for (int i = 1; i < deathCauses.size() + 1; i++) {
-                        if (deathCauses.get(i).getValue().getName().equals(valores[11])) {
-                            dc = deathCauses.get(i).getValue();
+                    for (int i = 0; i < deathCauses.size(); i++) {
+                        if (deathCauses.get(i).getName().equals(valores[11])) {
+                            dc = deathCauses.get(i);
                             break;
                         }
                     }
@@ -181,11 +182,11 @@ public class Main {
                     }
 
                     peopleList.add(cm);
-                    countttt++;
+                    //countttt++;
                     peopleHash.put(cm.getImdbNameId(),cm);
-                    if (countttt % 1000 == 0) {
-                        System.out.println(countttt);
-                    }
+                    //if (countttt % 1000 == 0) {
+                    //    System.out.println(countttt);
+                    //}
 
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -209,9 +210,8 @@ public class Main {
 
             while ((strCurrentLine = objReader.readLine()) != null) {
 
-                if (count == 1000) {
+                if (count % 1000 == 0) {
                     System.out.println(count);
-                    count = 0;
                 }
 
                 valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -220,14 +220,14 @@ public class Main {
                 String country = getCountryFromMovieCM(movieCM);
                 if (country != null) {
                     if (!peopleByCountry.contains(country)) {
-                        ListaEnlazada<MovieCastMember> tempCountryList = new ListaEnlazada<>();
+                        ArrayListImpl<MovieCastMember> tempCountryList = new ArrayListImpl<>(3000);
                         tempCountryList.add(movieCM);
                         peopleByCountry.put(country, tempCountryList);
 
                         count++;
 
                     } else {
-                        ListaEnlazada<MovieCastMember> tempList = peopleByCountry.get(country);
+                        ArrayListImpl<MovieCastMember> tempList = peopleByCountry.get(country);
                         tempList.add(movieCM);
 
                         count++;
@@ -257,7 +257,7 @@ public class Main {
         return country;
     }
 
-    public void segundaConsulta() {
+    public static void segundaConsulta() {
         String[] countries = new String[4];
         countries[0] = "USA";
         countries[1] = "Italy";
@@ -265,18 +265,18 @@ public class Main {
         countries[3] = "UK";
 
         for (int i = 0; i < 4; i++) {
-            ListaEnlazada<MovieCastMember> tempList = peopleByCountry.get(countries[i]);
+            ArrayListImpl<MovieCastMember> tempList = peopleByCountry.get(countries[i]);
 
-            for (int j = 1; i < tempList.size(); i++) {
-                if (tempList.get(j).getValue().getCategory().equals("director") || tempList.get(j).getValue().getCategory().equals("producer")) {
-                    CauseOfDeath tempCause = peopleHash.get(tempList.get(j).getValue().getActorID()).getCauseOfDeath();
+            for (int j = 0; i < tempList.size(); i++) {
+                if (tempList.get(j).getCategory().equals("director") || tempList.get(j).getCategory().equals("producer")) {
+                    CauseOfDeath tempCause = peopleHash.get(tempList.get(j).getActorID()).getCauseOfDeath();
                     tempCause.incrementOcurrencia();
                 }
             }
 
         }
 
-        // ordeno lista y devuelvo top 5
+        deathCauses.sort(); // falta devolver top 5
 
     }
 
