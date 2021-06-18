@@ -104,7 +104,7 @@ public class Main {
             } else if (seleccionConsulta == 3){
 //                terceraConsulta();
             } else if (seleccionConsulta == 4){
-//                cuartaConsulta();
+                cuartaConsulta();
             } else if (seleccionConsulta == 5){
 //                quintaConsulta();
             } else if (seleccionConsulta == 6){
@@ -170,23 +170,18 @@ public class Main {
                             break;
                         }
                     }
-
                     if (dc != null) {
                         cm.setCauseOfDeath(dc);
-
                     }
                     else {
-                        dc = new CauseOfDeath(valores[11]);
-                        deathCauses.add(dc);
-                        cm.setCauseOfDeath(dc);
+                        if (!valores[11].equals("") && !valores[11].equals("undisclosed")) {
+                            dc = new CauseOfDeath(valores[11]);
+                            deathCauses.add(dc);
+                            cm.setCauseOfDeath(dc);
+                        }
                     }
-
                     peopleList.add(cm);
-                    //countttt++;
                     peopleHash.put(cm.getImdbNameId(),cm);
-                    //if (countttt % 1000 == 0) {
-                    //    System.out.println(countttt);
-                    //}
 
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -206,13 +201,7 @@ public class Main {
             objReader = new BufferedReader(new InputStreamReader(new FileInputStream("dataset/IMDb title_principals.csv"), "UTF-8"));
             objReader.readLine(); // SALTEO DEL CABEZAL
 
-            int count = 0;
-
             while ((strCurrentLine = objReader.readLine()) != null) {
-
-                if (count % 1000 == 0) {
-                    System.out.println(count);
-                }
 
                 valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
                 MovieCastMember movieCM = new MovieCastMember(valores);
@@ -223,15 +212,9 @@ public class Main {
                         ArrayListImpl<MovieCastMember> tempCountryList = new ArrayListImpl<>(3000);
                         tempCountryList.add(movieCM);
                         peopleByCountry.put(country, tempCountryList);
-
-                        count++;
-
                     } else {
                         ArrayListImpl<MovieCastMember> tempList = peopleByCountry.get(country);
                         tempList.add(movieCM);
-
-                        count++;
-
                     }
                 }
             }
@@ -241,9 +224,9 @@ public class Main {
             e.printStackTrace();
         }
 
-        System.out.println("size lista peliculas: "+movies.size() + " y tiene que dar 85855");
-        System.out.println("size lista castMembers: "+peopleList.size() + " y tiene que dar 297705");
-        System.out.println("size lista movieCastMembers: "+characters.size() + " y tiene que dar 835493");
+        //System.out.println("size lista peliculas: "+movies.size() + " y tiene que dar 85855");
+        //System.out.println("size lista castMembers: "+peopleList.size() + " y tiene que dar 297705");
+        //System.out.println("size lista movieCastMembers: "+characters.size() + " y tiene que dar 835493");
     }
 
     private static String getCountryFromMovieCM(MovieCastMember movieCM) {
@@ -258,6 +241,7 @@ public class Main {
     }
 
     public static void segundaConsulta() {
+        long startTime = System.currentTimeMillis();
         String[] countries = new String[4];
         countries[0] = "USA";
         countries[1] = "Italy";
@@ -267,17 +251,95 @@ public class Main {
         for (int i = 0; i < 4; i++) {
             ArrayListImpl<MovieCastMember> tempList = peopleByCountry.get(countries[i]);
 
-            for (int j = 0; i < tempList.size(); i++) {
+            for (int j = 0; j < tempList.size(); j++) {
                 if (tempList.get(j).getCategory().equals("director") || tempList.get(j).getCategory().equals("producer")) {
                     CauseOfDeath tempCause = peopleHash.get(tempList.get(j).getActorID()).getCauseOfDeath();
-                    tempCause.incrementOcurrencia();
+                    if (tempCause != null) {
+                        tempCause.incrementOcurrencia();
+                    }
                 }
             }
 
         }
 
-        deathCauses.sort(); // falta devolver top 5
+        try {
+            deathCauses.sort();
+        }
+        catch (Exception e) {
+            int size = deathCauses.size();
+            e.printStackTrace();
+        }
 
+        for (int i = deathCauses.size() - 1; i > deathCauses.size() - 6; i--) {
+            System.out.println("Causa de muerte:" + deathCauses.get(i).getName() + "\n" +
+                    "Cantidad de personas:" + deathCauses.get(i).getOcurrencia());
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
+
+        // FALTA RESETEAR OCURRENCIAS
+
+    }
+
+    public static void cuartaConsulta() {
+        long startTime = System.currentTimeMillis();
+        // creo clase Year, con el valor ano y cantidad de ocurrencias
+        // creo listas: AnosMale, AnosFemale que contengan la clase Year
+        // filtro arraylist de MCM, si es actor o actriz, agarro la ID, en el hash de CM, busco por id y obtengo el ano
+        // si ya esta en la lista, sumo ocurrencia, sino creo instancia de Year y lo agrego
+        // ordeno las dos listas y devuelvo el primero de cada una
+
+        ArrayListImpl<Year> maleYears = new ArrayListImpl<>(500);
+        ArrayListImpl<Year> femaleYears = new ArrayListImpl<>(500);
+
+        for (int i = 0; i < characters.size(); i++) {
+
+            if (characters.get(i).getCategory().equals("actor")) {
+                CastMember person = peopleHash.get(characters.get(i).getActorID());
+
+                if (person.getBirthDate() != null) {
+                    int tempYear = person.getBirthDate().getYear();
+                    if (tempYear != 0) {
+                        Year year = new Year(tempYear);
+                        if (!maleYears.contains(year)) {
+                            maleYears.add(year);
+                        } else {
+                            maleYears.get(tempYear).incrementOcurrencias();
+                        }
+                    }
+                }
+
+
+            }
+
+            if (characters.get(i).getCategory().equals("actress")) {
+                CastMember person = peopleHash.get(characters.get(i).getActorID());
+
+                if (person.getBirthDate() != null) {
+                    int tempYear = person.getBirthDate().getYear();
+                    if (tempYear != 0) {
+                        Year year = new Year(tempYear);
+                        if (!femaleYears.contains(year)) {
+                            femaleYears.add(year);
+                        } else {
+                            femaleYears.get(tempYear).incrementOcurrencias();
+                        }
+                    }
+                }
+
+
+            }
+
+        }
+
+        maleYears.sort();
+        femaleYears.sort();
+
+        System.out.println(maleYears.get(0).getYear());
+        System.out.println(femaleYears.get(0).getYear());
+
+        long endTime = System.currentTimeMillis();
+        System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
     }
 
 
