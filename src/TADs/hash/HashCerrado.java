@@ -1,5 +1,7 @@
 package TADs.hash;
 
+import TADs.arrayList.ArrayListImpl;
+
 import java.util.Arrays;
 
 public class HashCerrado<K, T> implements HashTable<K, T>{
@@ -36,37 +38,42 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
         //Implementacion lineal
         int hash = Math.abs(key.hashCode()) % size;
         int position = hash;
-        int collisions = 1;
+        int colisiones = 1;
 
         while(table[position] != null){
-            position = (hash + collisions) % size;
-            collisions++;
+            position = Math.abs((hash + Math.abs(colisiones*colisiones))) % size;
+            colisiones++;
         }
 
         table[position] = new NodoHashCerrado<>(key, value);
         hasBeenDeleted[position] = false;   //Puede ser un sitio que habia sido previamente elminado
         amountOfItems++;
 
-        if((double) (amountOfItems/size) > loadFactor){
+        if((amountOfItems/(double)size) > loadFactor){
             restructureHash();
         }
     }
 
     private void restructureHash() {
-        int newSize = getNextPrime(size);
+//        int newSize = getNextPrime(size);
+        int newSize = (int) (size*1.5);
         NodoHashCerrado<K, T>[] newTable = new NodoHashCerrado[newSize];
         Boolean[] newHasBeenDeleted = new Boolean[newSize];
         Arrays.fill(newHasBeenDeleted, false);
 
         //Implementacion lineal
         for (NodoHashCerrado<K, T> nodo : table) {
+            if(nodo == null){
+                continue;
+            }
+
             int hash = Math.abs(nodo.getKey().hashCode()) % newSize;
             int position = hash;
-            int collisions = 1;
+            int colisiones = 1;
 
             while(newTable[position] != null){
-                position = (hash + collisions) % newSize;
-                collisions++;
+                position = Math.abs((hash + Math.abs(colisiones*colisiones))) % newSize;
+                colisiones++;
             }
 
             newTable[position] = nodo;
@@ -107,9 +114,26 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
         int position = hash;
         int colisiones = 1;
 
-        Boolean[] hasBeenChecked = new Boolean[size];
-        Arrays.fill(hasBeenChecked, false);
+//        Boolean[] hasBeenChecked = new Boolean[size];
+//        Arrays.fill(hasBeenChecked, false);
 
+
+//        while(table[position] !=null || hasBeenDeleted[position]){
+//            if (!hasBeenDeleted[position]) {
+//                if (table[position].getKey().equals(key)) {
+//                    return true;
+//                }
+//            }
+//
+//            hasBeenChecked[position] = true;
+//            if(!arrayContains(hasBeenChecked,false)){
+//                //Todas las posiciones fueron revisadas y no se encontro el elemento
+//                return false;
+//            }
+//
+//            position = Math.abs((hash + Math.abs(colisiones*colisiones))) % size;
+//            colisiones++;
+//        }
 
         while(table[position] !=null || hasBeenDeleted[position]){
             if (!hasBeenDeleted[position]) {
@@ -118,13 +142,13 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
                 }
             }
 
-            hasBeenChecked[position] = true;
-            if(!arrayContains(hasBeenChecked,false)){
-                //Todas las posiciones fueron revisadas y no se encontro el elemento
-                return false;
-            }
+//            hasBeenChecked[position] = true;
+//            if(!arrayContains(hasBeenChecked,false)){
+//                //Todas las posiciones fueron revisadas y no se encontro el elemento
+//                return false;
+//            }
 
-            position = (hash + colisiones) % size;
+            position = Math.abs((hash + Math.abs(colisiones*colisiones))) % size;
             colisiones++;
         }
 
@@ -159,7 +183,7 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
                     break;
                 }
             }
-            position = (hash + colisiones) % size;
+            position = Math.abs((hash + Math.abs(colisiones*colisiones))) % size;
             colisiones++;
         }
     }
@@ -180,8 +204,19 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
                     return table[position].getData();
                 }
             }
-            position = (hash + colisiones) % size;
+            position = Math.abs((hash + Math.abs(colisiones*colisiones))) % size;
             colisiones++;
         }
+    }
+    
+    public ArrayListImpl<K> getKeys(){
+        ArrayListImpl<K> keys = new ArrayListImpl<>(amountOfItems);
+        for (NodoHashCerrado<K, T> nodo : table) {
+            if(nodo != null){
+                keys.add(nodo.getKey());
+            }
+        }
+
+        return keys;
     }
 }

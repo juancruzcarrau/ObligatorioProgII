@@ -134,7 +134,7 @@ public class CastMember {
     }
 
     private String[] placeSeparator(String data) {
-        String[] info = new String[3];
+        String[] info = new String[4];
         String[] strArray = data.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 
         if (strArray.length == 1) { // SI SOLO HAY INFO DE PAIS O NO HAY INFO (String vacio)
@@ -157,10 +157,16 @@ public class CastMember {
             info[2] = strArray[1].trim();
         }
 
-        else { // SI HAY INFO DE CIUDAD, ESTADO Y PAIS
+        else if (strArray.length == 3) { // SI HAY INFO DE CIUDAD, ESTADO Y PAIS
             info[0] = strArray[0].trim();
             info[1] = strArray[1].trim();
             info[2] = strArray[2].trim();
+        }
+
+        else { // CASO UK: DISTRITO, ESTADO, PAIS, UK
+            info[0] = strArray[0].trim();
+            info[1] = strArray[1].trim();
+            info[2] = strArray[3].trim();
         }
 
         return info;

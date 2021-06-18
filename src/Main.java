@@ -1,5 +1,5 @@
+import TADs.arrayList.ArrayListImpl;
 import TADs.hash.HashCerrado;
-import TADs.listaSimpleFC.ListaEnlazada;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
@@ -15,11 +15,18 @@ public class Main {
 
     static Scanner scanner = new Scanner(System.in);
 
-    static ListaEnlazada<CastMember> people = new ListaEnlazada<>();
-    static ListaEnlazada<CauseOfDeath> deathCauses = new ListaEnlazada<>();
-    static ListaEnlazada<Movie> movies = new ListaEnlazada<>();
-    static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(86000,1);
-    static ListaEnlazada<MovieCastMember> characters = new ListaEnlazada<>();
+    // cast members
+    static ArrayListImpl<CastMember> peopleList = new ArrayListImpl<>(300000);
+    static HashCerrado<String,CastMember> peopleHash = new HashCerrado<>(400000);
+    static ArrayListImpl<CauseOfDeath> deathCauses = new ArrayListImpl<>(10000);
+
+    // movies
+    static ArrayListImpl<Movie> movies = new ArrayListImpl<>(86000);
+    static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(115000);
+
+    // movie cast members
+    static ArrayListImpl<MovieCastMember> characters = new ArrayListImpl<>(835494);
+    static HashCerrado<String, ArrayListImpl<MovieCastMember>> peopleByCountry = new HashCerrado<>(300, 0.75);
 
     public static void main(String[] args){
         while(true){
@@ -88,7 +95,10 @@ public class Main {
             }
 
             if(seleccionConsulta == 1){
-//                primeraConsulta();
+                long startTime = System.currentTimeMillis();
+                primeraConsulta();
+                long endTime = System.currentTimeMillis();
+                System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
             } else if (seleccionConsulta == 2){
 //                segundaConsulta();
             } else if (seleccionConsulta == 3){
@@ -100,6 +110,60 @@ public class Main {
             } else if (seleccionConsulta == 6){
                 break;
             }
+        }
+
+    }
+
+    private static void primeraConsulta() {
+
+        HashCerrado<String, Apariciones> hashDeActores = new HashCerrado<>(10000);
+        for (int i = 0; i < characters.size(); i++) {
+            MovieCastMember castMember = characters.get(i);
+            if (castMember.getCategory().equals("actor") || castMember.getCategory().equals("actress")){
+                if (!hashDeActores.contains(castMember.getActorID())) {
+                    hashDeActores.put(castMember.getActorID(), new Apariciones(castMember, 1));
+                } else {
+                    Apariciones aparicionesDeCastMember = hashDeActores.get(castMember.getActorID());
+                    aparicionesDeCastMember.agregarAparicion();
+                }
+            }
+//            if (castMember.getCategory().equals("actor") || castMember.getCategory().equals("actress")){
+//                Apariciones aparicion = null;
+//                for (int j = 0; j < listaDeActores.size(); j++) {
+//                    Apariciones temp = listaDeActores.get(j);
+//                    if(temp.getActor().getActorID().equals(castMember.getActorID())){
+//                        aparicion = temp;
+//                        break;
+//                    }
+//                }
+//
+//                if (aparicion == null){
+//                    aparicion = new Apariciones(castMember, 1);
+//                    listaDeActores.add(aparicion);
+//                }
+//
+//                aparicion.agregarAparicion();
+//            }
+        }
+
+        ArrayListImpl<String> aparicionesKeys = hashDeActores.getKeys();
+        ArrayListImpl<Apariciones> aparicionesList = new ArrayListImpl<>(aparicionesKeys.size());
+        for (int i = 0; i < aparicionesKeys.size(); i++) {
+            try {
+                String key = aparicionesKeys.get(i);
+                Apariciones apariciones = hashDeActores.get(key);
+                aparicionesList.add(apariciones);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        aparicionesList.sort();
+
+        for (int i = aparicionesList.size(); i > aparicionesList.size() - 5; i--) {
+            CastMember castMember = peopleHash.get(aparicionesList.get(i-1).getActor().getActorID());
+            System.out.println("Nombre actor/actriz: " + castMember.getName());
+            System.out.println("Cantidad de apariciones: " + aparicionesList.get(i-1).getCantidadDeApariciones());
         }
 
     }
@@ -152,9 +216,9 @@ public class Main {
                     CastMember cm = new CastMember(valores);
                     CauseOfDeath dc = null;
 
-                    for (int i = 1; i < deathCauses.size() + 1; i++) {
-                        if (deathCauses.get(i).getValue().getName().equals(valores[11])) {
-                            dc = deathCauses.get(i).getValue();
+                    for (int i = 0; i < deathCauses.size(); i++) {
+                        if (deathCauses.get(i).getName().equals(valores[11])) {
+                            dc = deathCauses.get(i);
                             break;
                         }
                     }
@@ -168,7 +232,8 @@ public class Main {
                         cm.setCauseOfDeath(dc);
                     }
 
-                    people.add(cm);
+                    peopleList.add(cm);
+                    peopleHash.put(cm.getImdbNameId(),cm);
 
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -191,17 +256,59 @@ public class Main {
                 valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
                 MovieCastMember movieCM = new MovieCastMember(valores);
                 characters.add(movieCM);
+                String country = getCountryFromMovieCM(movieCM);
+                if (country != null) {
+                    if (!peopleByCountry.contains(country)) {
+                        ArrayListImpl<MovieCastMember> tempCountryList = new ArrayListImpl<>(3000);
+                        tempCountryList.add(movieCM);
+                        peopleByCountry.put(country, tempCountryList);
+                    } else {
+                        ArrayListImpl<MovieCastMember> tempList = peopleByCountry.get(country);
+                        tempList.add(movieCM);
+                    }
                 }
+            }
         }
 
         catch (Exception e) {
             e.printStackTrace();
         }
-
-        System.out.println("size lista peliculas: "+movies.size() + " y tiene que dar 85855");
-        System.out.println("size lista castMembers: "+people.size() + " y tiene que dar 297705");
-        System.out.println("size lista movieCastMembers: "+characters.size() + " y tiene que dar 835493");
     }
+
+    private static String getCountryFromMovieCM(MovieCastMember movieCM) {
+        String country = null;
+        String key = movieCM.getActorID();
+
+        if (peopleHash.contains(key)) {
+            country  = peopleHash.get(key).getBirthCountry();
+        }
+
+        return country;
+    }
+
+    public static void segundaConsulta() {
+        String[] countries = new String[4];
+        countries[0] = "USA";
+        countries[1] = "Italy";
+        countries[2] = "France";
+        countries[3] = "UK";
+
+        for (int i = 0; i < 4; i++) {
+            ArrayListImpl<MovieCastMember> tempList = peopleByCountry.get(countries[i]);
+
+            for (int j = 0; i < tempList.size(); i++) {
+                if (tempList.get(j).getCategory().equals("director") || tempList.get(j).getCategory().equals("producer")) {
+                    CauseOfDeath tempCause = peopleHash.get(tempList.get(j).getActorID()).getCauseOfDeath();
+                    tempCause.incrementOcurrencia();
+                }
+            }
+
+        }
+
+        deathCauses.sort(); // falta devolver top 5
+
+    }
+
 
 }
 
