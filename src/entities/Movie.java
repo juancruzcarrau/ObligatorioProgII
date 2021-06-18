@@ -9,7 +9,7 @@ import java.util.Date;
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
 
-public class Movie {
+public class Movie implements Comparable<Movie>{
 
     private final String imbdTitleId;
     private final String title;
@@ -196,4 +196,13 @@ public class Movie {
         return list;
     }
 
+    @Override
+    public int compareTo(Movie that) {
+        if(this.movieRating.getWeightedAverage() > that.movieRating.getWeightedAverage()){
+            return 1;
+        } else if (this.movieRating.getWeightedAverage() < that.movieRating.getWeightedAverage()) {
+            return -1;
+        }
+        return 0;
+    }
 }
