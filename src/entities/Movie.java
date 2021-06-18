@@ -36,43 +36,6 @@ public class Movie {
     private final float reviewsFromCritics;
     private MovieRating movieRating;
 
-
-    public Movie(String imbdTitleId, String title, String originalTitle,
-                 int year, Date datePublished, ArrayListImpl<String> genre,
-                 int duration, ArrayListImpl<String> country, String language,
-                 ArrayListImpl<String> director, ArrayListImpl<String> writer,
-                 String productionCompany, ArrayListImpl<String> actors,
-                 String description, float avgVote, int votes, String budget,
-                 String usaGrossIncome, String worldwideGrossIncome,
-                 float metaScore, float reviewsFromUsers,
-                 float reviewsFromCritics, MovieRating movieRating) {
-
-        this.imbdTitleId = imbdTitleId;
-        this.title = title;
-        this.originalTitle = originalTitle;
-        this.year = year;
-        this.datePublished = datePublished;
-        this.genre = genre;
-        this.duration = duration;
-        this.country = country;
-        this.language = language;
-        this.director = director;
-        this.writer = writer;
-        this.productionCompany = productionCompany;
-        this.actors = actors;
-        this.description = description;
-        this.avgVote = avgVote;
-        this.votes = votes;
-        this.budget = budget;
-        this.usaGrossIncome = usaGrossIncome;
-        this.worldwideGrossIncome = worldwideGrossIncome;
-        this.metaScore = metaScore;
-        this.reviewsFromUsers = reviewsFromUsers;
-        this.reviewsFromCritics = reviewsFromCritics;
-        this.movieRating = movieRating;
-
-    }
-
     public Movie(String[] metadata) throws ParseException {
         this.imbdTitleId = metadata[0];
         this.title = metadata[1];
