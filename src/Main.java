@@ -1,6 +1,5 @@
 import TADs.arrayList.ArrayListImpl;
 import TADs.hash.HashCerrado;
-import TADs.listaSimpleFC.ListaEnlazada;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
@@ -14,21 +13,19 @@ import java.util.Scanner;
 
 public class Main {
 
-
-
     static Scanner scanner = new Scanner(System.in);
 
     // cast members
     static ArrayListImpl<CastMember> peopleList = new ArrayListImpl<>(300000);
-    static HashCerrado<String,CastMember> peopleHash = new HashCerrado<>(400000, 1);
+    static HashCerrado<String,CastMember> peopleHash = new HashCerrado<>(400000);
     static ArrayListImpl<CauseOfDeath> deathCauses = new ArrayListImpl<>(10000);
 
     // movies
-    static ListaEnlazada<Movie> movies = new ListaEnlazada<>();
-    static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(115000,1);
+    static ArrayListImpl<Movie> movies = new ArrayListImpl<>(86000);
+    static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(115000);
 
     // movie cast members
-    static ArrayListImpl<MovieCastMember> characters = new ArrayListImpl<>(850000);
+    static ArrayListImpl<MovieCastMember> characters = new ArrayListImpl<>(835494);
     static HashCerrado<String, ArrayListImpl<MovieCastMember>> peopleByCountry = new HashCerrado<>(300, 0.75);
 
     public static void main(String[] args){
@@ -98,9 +95,12 @@ public class Main {
             }
 
             if(seleccionConsulta == 1){
-//                primeraConsulta();
+                long startTime = System.currentTimeMillis();
+                primeraConsulta();
+                long endTime = System.currentTimeMillis();
+                System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
             } else if (seleccionConsulta == 2){
-                segundaConsulta();
+//                segundaConsulta();
             } else if (seleccionConsulta == 3){
 //                terceraConsulta();
             } else if (seleccionConsulta == 4){
@@ -110,6 +110,60 @@ public class Main {
             } else if (seleccionConsulta == 6){
                 break;
             }
+        }
+
+    }
+
+    private static void primeraConsulta() {
+
+        HashCerrado<String, Apariciones> hashDeActores = new HashCerrado<>(10000);
+        for (int i = 0; i < characters.size(); i++) {
+            MovieCastMember castMember = characters.get(i);
+            if (castMember.getCategory().equals("actor") || castMember.getCategory().equals("actress")){
+                if (!hashDeActores.contains(castMember.getActorID())) {
+                    hashDeActores.put(castMember.getActorID(), new Apariciones(castMember, 1));
+                } else {
+                    Apariciones aparicionesDeCastMember = hashDeActores.get(castMember.getActorID());
+                    aparicionesDeCastMember.agregarAparicion();
+                }
+            }
+//            if (castMember.getCategory().equals("actor") || castMember.getCategory().equals("actress")){
+//                Apariciones aparicion = null;
+//                for (int j = 0; j < listaDeActores.size(); j++) {
+//                    Apariciones temp = listaDeActores.get(j);
+//                    if(temp.getActor().getActorID().equals(castMember.getActorID())){
+//                        aparicion = temp;
+//                        break;
+//                    }
+//                }
+//
+//                if (aparicion == null){
+//                    aparicion = new Apariciones(castMember, 1);
+//                    listaDeActores.add(aparicion);
+//                }
+//
+//                aparicion.agregarAparicion();
+//            }
+        }
+
+        ArrayListImpl<String> aparicionesKeys = hashDeActores.getKeys();
+        ArrayListImpl<Apariciones> aparicionesList = new ArrayListImpl<>(aparicionesKeys.size());
+        for (int i = 0; i < aparicionesKeys.size(); i++) {
+            try {
+                String key = aparicionesKeys.get(i);
+                Apariciones apariciones = hashDeActores.get(key);
+                aparicionesList.add(apariciones);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        aparicionesList.sort();
+
+        for (int i = aparicionesList.size(); i > aparicionesList.size() - 5; i--) {
+            CastMember castMember = peopleHash.get(aparicionesList.get(i-1).getActor().getActorID());
+            System.out.println("Nombre actor/actriz: " + castMember.getName());
+            System.out.println("Cantidad de apariciones: " + aparicionesList.get(i-1).getCantidadDeApariciones());
         }
 
     }
@@ -156,8 +210,6 @@ public class Main {
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
             String[] valores = null;
 
-            //int countttt = 0;
-
             while ((valores = csvReader.readNext()) != null) {
 
                 try {
@@ -173,7 +225,6 @@ public class Main {
 
                     if (dc != null) {
                         cm.setCauseOfDeath(dc);
-
                     }
                     else {
                         dc = new CauseOfDeath(valores[11]);
@@ -182,11 +233,7 @@ public class Main {
                     }
 
                     peopleList.add(cm);
-                    //countttt++;
                     peopleHash.put(cm.getImdbNameId(),cm);
-                    //if (countttt % 1000 == 0) {
-                    //    System.out.println(countttt);
-                    //}
 
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -205,15 +252,7 @@ public class Main {
             BufferedReader objReader;
             objReader = new BufferedReader(new InputStreamReader(new FileInputStream("dataset/IMDb title_principals.csv"), "UTF-8"));
             objReader.readLine(); // SALTEO DEL CABEZAL
-
-            int count = 0;
-
             while ((strCurrentLine = objReader.readLine()) != null) {
-
-                if (count % 1000 == 0) {
-                    System.out.println(count);
-                }
-
                 valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
                 MovieCastMember movieCM = new MovieCastMember(valores);
                 characters.add(movieCM);
@@ -223,15 +262,9 @@ public class Main {
                         ArrayListImpl<MovieCastMember> tempCountryList = new ArrayListImpl<>(3000);
                         tempCountryList.add(movieCM);
                         peopleByCountry.put(country, tempCountryList);
-
-                        count++;
-
                     } else {
                         ArrayListImpl<MovieCastMember> tempList = peopleByCountry.get(country);
                         tempList.add(movieCM);
-
-                        count++;
-
                     }
                 }
             }
@@ -240,10 +273,6 @@ public class Main {
         catch (Exception e) {
             e.printStackTrace();
         }
-
-        System.out.println("size lista peliculas: "+movies.size() + " y tiene que dar 85855");
-        System.out.println("size lista castMembers: "+peopleList.size() + " y tiene que dar 297705");
-        System.out.println("size lista movieCastMembers: "+characters.size() + " y tiene que dar 835493");
     }
 
     private static String getCountryFromMovieCM(MovieCastMember movieCM) {
