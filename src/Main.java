@@ -14,6 +14,7 @@ import java.util.Scanner;
 public class Main {
 
     static Scanner scanner = new Scanner(System.in);
+    static boolean datosCargados = false;
 
     // cast members
     static ArrayListImpl<CastMember> peopleList = new ArrayListImpl<>(300000);
@@ -52,10 +53,16 @@ public class Main {
             }
 
             if(seleccion == 1){
-                long startTime = System.currentTimeMillis();
-                cargarDatos();
-                long endTime = System.currentTimeMillis();
-                System.out.println("Carga de datos exitosa, tiempo de ejecución de la carga:" + (endTime - startTime));
+                if (!datosCargados) {
+                    long startTime = System.currentTimeMillis();
+                    cargarDatos();
+                    long endTime = System.currentTimeMillis();
+                    System.out.println("Carga de datos exitosa, tiempo de ejecución de la carga:" + (endTime - startTime));
+
+                    datosCargados = true;
+                } else {
+                    System.out.println("Los datos ya se han cargado.");
+                }
             } else if (seleccion == 2){
                 ejectutarConsultas();
             } else if (seleccion == 3){
