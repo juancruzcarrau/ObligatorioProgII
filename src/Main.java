@@ -8,9 +8,7 @@ import entities.*;
 
 import java.io.*;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
@@ -30,6 +28,9 @@ public class Main {
     // movie cast members
     static ArrayListImpl<MovieCastMember> characters = new ArrayListImpl<>(850000);
     static HashCerrado<String, ArrayListImpl<MovieCastMember>> peopleByCountry = new HashCerrado<>(300, 0.75);
+
+    // otros
+    static Calendar calendar = new GregorianCalendar();
 
     public static void main(String[] args){
         while(true){
@@ -283,12 +284,6 @@ public class Main {
 
     public static void cuartaConsulta() {
         long startTime = System.currentTimeMillis();
-        // creo clase Year, con el valor ano y cantidad de ocurrencias
-        // creo listas: AnosMale, AnosFemale que contengan la clase Year
-        // filtro arraylist de MCM, si es actor o actriz, agarro la ID, en el hash de CM, busco por id y obtengo el ano
-        // si ya esta en la lista, sumo ocurrencia, sino creo instancia de Year y lo agrego
-        // ordeno las dos listas y devuelvo el primero de cada una
-
         ArrayListImpl<Year> maleYears = new ArrayListImpl<>(500);
         ArrayListImpl<Year> femaleYears = new ArrayListImpl<>(500);
 
@@ -298,14 +293,13 @@ public class Main {
                 CastMember person = peopleHash.get(characters.get(i).getActorID());
 
                 if (person.getBirthDate() != null) {
-                    int tempYear = person.getBirthDate().getYear();
-                    if (tempYear != 0) {
-                        Year year = new Year(tempYear);
-                        if (!maleYears.contains(year)) {
-                            maleYears.add(year);
-                        } else {
-                            maleYears.get(tempYear).incrementOcurrencias();
-                        }
+                    calendar.setTime(person.getBirthDate());
+                    int tempYear = calendar.get(Calendar.YEAR);
+                    Year year = new Year(tempYear);
+                    if (!maleYears.contains(year)) {
+                        maleYears.add(year);
+                    } else {
+                        maleYears.get(tempYear).incrementOcurrencias();     // FIXME: NUNCA ENTRA
                     }
                 }
 
@@ -316,17 +310,15 @@ public class Main {
                 CastMember person = peopleHash.get(characters.get(i).getActorID());
 
                 if (person.getBirthDate() != null) {
-                    int tempYear = person.getBirthDate().getYear();
-                    if (tempYear != 0) {
-                        Year year = new Year(tempYear);
-                        if (!femaleYears.contains(year)) {
-                            femaleYears.add(year);
-                        } else {
-                            femaleYears.get(tempYear).incrementOcurrencias();
-                        }
+                    calendar.setTime(person.getBirthDate());
+                    int tempYear = calendar.get(Calendar.YEAR);
+                    Year year = new Year(tempYear);
+                    if (!femaleYears.contains(year)) {
+                        femaleYears.add(year);
+                    } else {
+                        femaleYears.get(tempYear).incrementOcurrencias();
                     }
                 }
-
 
             }
 
@@ -335,8 +327,10 @@ public class Main {
         maleYears.sort();
         femaleYears.sort();
 
-        System.out.println(maleYears.get(0).getYear());
-        System.out.println(femaleYears.get(0).getYear());
+        System.out.println("hombres:" + maleYears.get(maleYears.size()-1).getYear());
+        System.out.println("hombres:" + maleYears.get(maleYears.size()-1).getOcurrencias());
+        System.out.println("mujeres:" + femaleYears.get(femaleYears.size()-1).getYear());
+        System.out.println("mujeres:" + femaleYears.get(femaleYears.size()-1).getOcurrencias());
 
         long endTime = System.currentTimeMillis();
         System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
