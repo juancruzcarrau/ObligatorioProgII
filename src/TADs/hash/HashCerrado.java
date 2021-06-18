@@ -1,5 +1,7 @@
 package TADs.hash;
 
+import TADs.arrayList.ArrayListImpl;
+
 import java.util.Arrays;
 
 public class HashCerrado<K, T> implements HashTable<K, T>{
@@ -67,11 +69,11 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
 
             int hash = Math.abs(nodo.getKey().hashCode()) % newSize;
             int position = hash;
-            int collisions = 1;
+            int colisiones = 1;
 
             while(newTable[position] != null){
-                position = (hash + collisions) % newSize;
-                collisions++;
+                position = Math.abs((hash + Math.abs(colisiones*colisiones))) % newSize;
+                colisiones++;
             }
 
             newTable[position] = nodo;
@@ -205,5 +207,16 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
             position = Math.abs((hash + Math.abs(colisiones*colisiones))) % size;
             colisiones++;
         }
+    }
+    
+    public ArrayListImpl<K> getKeys(){
+        ArrayListImpl<K> keys = new ArrayListImpl<>(amountOfItems);
+        for (NodoHashCerrado<K, T> nodo : table) {
+            if(nodo != null){
+                keys.add(nodo.getKey());
+            }
+        }
+
+        return keys;
     }
 }
