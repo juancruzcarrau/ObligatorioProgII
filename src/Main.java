@@ -189,7 +189,6 @@ public class Main {
                             cm.setCauseOfDeath(dc);
                         }
                     }
-                    peopleList.add(cm);
 
                     peopleHash.put(cm.getImdbNameId(),cm);
 
@@ -213,7 +212,6 @@ public class Main {
             while ((strCurrentLine = objReader.readLine()) != null) {
                 valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
                 MovieCastMember movieCM = new MovieCastMember(valores);
-                characters.add(movieCM);
                 ArrayListImpl<MovieCastMember> categoryList;
                 if(categoryHash.contains(movieCM.getCategory())){
                     categoryList = categoryHash.get(movieCM.getCategory());
@@ -244,7 +242,7 @@ public class Main {
 
     private static void primeraConsulta() {
 
-        HashCerrado<String, Apariciones> hashDeActores = new HashCerrado<>(10000);
+/*        HashCerrado<String, Apariciones> hashDeActores = new HashCerrado<>(10000);
         for (int i = 0; i < characters.size(); i++) {
             MovieCastMember castMember = characters.get(i);
             if (castMember.getCategory().equals("actor") || castMember.getCategory().equals("actress")){
@@ -275,88 +273,104 @@ public class Main {
             CastMember castMember = peopleHash.get(aparicionesList.get(i-1).getActor().getActorID());
             System.out.println("Nombre actor/actriz: " + castMember.getName());
             System.out.println("Cantidad de apariciones: " + aparicionesList.get(i-1).getCantidadDeApariciones());
-        }
+        }*/
 
     }
 
     public static void segundaConsulta() {
-
-        String[] countries = new String[4];
-        countries[0] = "usa";
-        countries[1] = "italy";
-        countries[2] = "france";
-        countries[3] = "uk";
-
-        String str = "hola";
-        boolean bool = str.contains("uk") && !str.contains("ukraine");
-
-        HashCerrado<String, Integer> deathHash = new HashCerrado<>(5000);
-        ArrayListImpl<CauseOcurrence> causes = new ArrayListImpl<>(5000);
+        HashCerrado<CauseOfDeath, CauseOcurrence> deathHash = new HashCerrado<>(5000);
         ArrayListImpl<MovieCastMember> directors = categoryHash.get("director");
         ArrayListImpl<MovieCastMember> producers = categoryHash.get("producer");
 
+
         for (int i = 0; i < directors.size(); i++) {
-            CastMember director = peopleHash.get(directors.get(i).getActorID());
 
-            if ((director.getBirthCountry().contains("usa") || director.getBirthCountry().contains("uk") ||
-                    director.getBirthCountry().contains("italy") || director.getBirthCountry().contains("france"))
-                    && director.getBirthCountry().contains("ukraine")) {
-
-                if (deathHash.contains(new CauseOcurrence(director.getCauseOfDeath()))) { // si la causa de muerte ya esta registrada
-
-                }
-
-
-
-
-
-
+            CastMember director = null;
+            try {
+                director = peopleHash.get(directors.get(i).getActorID());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
+            if (director != null) {
+                if (director.getBirthCountry() != null) {
+                    if (!director.getBirthCountry().equals("") && director.getCauseOfDeath() != null) {
 
+                        if ((director.getBirthCountry().contains("usa") || director.getBirthCountry().contains("uk") ||
+                                director.getBirthCountry().contains("italy") || director.getBirthCountry().contains("france"))
+                                && !director.getBirthCountry().contains("ukraine")) {
 
+                            if (deathHash.contains(director.getCauseOfDeath())) { // si la causa de muerte ya esta registrada
+                                CauseOcurrence ocurrence = deathHash.get(director.getCauseOfDeath());
+                                ocurrence.incrementOcurrence();
+                            } else { // si no esta registrada, la creo
+                                CauseOcurrence ocurrence = new CauseOcurrence(director.getCauseOfDeath());
+                                deathHash.put(director.getCauseOfDeath(), ocurrence);
+                            }
 
-
-
-
-            for (int j = 0; j < tempList.size(); j++) {
-                if (tempList.get(j).getCategory().equals("director") || tempList.get(j).getCategory().equals("producer")) {
-                    CauseOfDeath tempCause = peopleHash.get(tempList.get(j).getActorID()).getCauseOfDeath();
-                    if (tempCause != null) {
-                        tempCause.incrementOcurrence();
+                        }
                     }
                 }
             }
-
         }
+
+            CastMember producer = null;
+            try {
+                producer = peopleHash.get(producers.get(i).getActorID());
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (producer != null) {
+                if (producer.getBirthCountry() != null) {
+                    if (!producer.getBirthCountry().equals("") && producer.getCauseOfDeath() != null) {
+
+                        if ((producer.getBirthCountry().contains("usa") || producer.getBirthCountry().contains("uk") ||
+                                producer.getBirthCountry().contains("italy") || producer.getBirthCountry().contains("france"))
+                                && !producer.getBirthCountry().contains("ukraine")) {
+
+                            if (deathHash.contains(producer.getCauseOfDeath())) { // si la causa de muerte ya esta registrada
+                                CauseOcurrence ocurrence = deathHash.get(producer.getCauseOfDeath());
+                                ocurrence.incrementOcurrence();
+                            } else {
+                                CauseOcurrence ocurrence = new CauseOcurrence(producer.getCauseOfDeath());
+                                deathHash.put(producer.getCauseOfDeath(), ocurrence);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        ArrayListImpl<CauseOcurrence> causesWithOcurrence = deathHash.getValues();
 
         try {
-            deathCauses.sort();
+            causesWithOcurrence.sort();
         }
         catch (Exception e) {
-            int size = deathCauses.size();
             e.printStackTrace();
         }
 
-        for (int i = deathCauses.size() - 1; i > deathCauses.size() - 6; i--) {
-            System.out.println("Causa de muerte:" + deathCauses.get(i).getName() + "\n" +
-                    "Cantidad de personas:" + deathCauses.get(i).getOcurrence());
+        for (int i = causesWithOcurrence.size() - 1; i > causesWithOcurrence.size() - 6; i--) {
+            System.out.println("Causa de muerte:" + causesWithOcurrence.get(i).getCause().getName() + "\n" +
+                    "Cantidad de personas:" + causesWithOcurrence.get(i).getOcurrence());
         }
 
-        }
+    }
 
     public static void cuartaConsulta() {
-        ArrayListImpl<MovieCastMember> actor = castMemberHash.get("actor");
-        ArrayListImpl<MovieCastMember> actress = castMemberHash.get("actress");
-
-
+        ArrayListImpl<MovieCastMember> actors = categoryHash.get("actor");
+        ArrayListImpl<MovieCastMember> actress = categoryHash.get("actress");
         ArrayListImpl<Year> maleYears = new ArrayListImpl<>(500);
         ArrayListImpl<Year> femaleYears = new ArrayListImpl<>(500);
+        /*
 
-        for (int i = 0; i < characters.size(); i++) {
+       for (int i = 0; i < actors.size(); i++) {
 
-            if (characters.get(i).getCategory().equals("actor")) {
-                CastMember person = peopleHash.get(characters.get(i).getActorID());
+                MovieCastMember actor = actors.get(i);
+
 
                 if (person.getBirthDate() != null) {
                     calendar.setTime(person.getBirthDate());
@@ -397,9 +411,11 @@ public class Main {
         System.out.println("hombres:" + maleYears.get(maleYears.size()-1).getOcurrencias());
         System.out.println("mujeres:" + femaleYears.get(femaleYears.size()-1).getYear());
         System.out.println("mujeres:" + femaleYears.get(femaleYears.size()-1).getOcurrencias());
+        */
     }
 
     private static void terceraConsulta() {
+/*
         ArrayListImpl<Movie> moviesInYears = new ArrayListImpl<>(5000); //Numero inicial arbitrario
 
         int fechaInicio = 1950; //Corresponde al inicio de 1950
@@ -453,6 +469,7 @@ public class Main {
             }
 
         }
+*/
 
     }
 
