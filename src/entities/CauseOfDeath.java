@@ -2,9 +2,8 @@ package entities;
 
 import java.util.Objects;
 
-public class CauseOfDeath implements Comparable<CauseOfDeath> {
+public class CauseOfDeath {
 
-    private int ocurrencia = 1;
     private final String name;
 
     public CauseOfDeath(String name) {
@@ -15,13 +14,6 @@ public class CauseOfDeath implements Comparable<CauseOfDeath> {
         return name;
     }
 
-    public int getOcurrencia() {
-        return ocurrencia;
-    }
-
-    public void incrementOcurrencia() {
-        this.ocurrencia++;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -29,21 +21,6 @@ public class CauseOfDeath implements Comparable<CauseOfDeath> {
         if (o == null || getClass() != o.getClass()) return false;
         CauseOfDeath that = (CauseOfDeath) o;
         return Objects.equals(name, that.name);
-    }
-
-
-    @Override
-    public int compareTo(CauseOfDeath that) {
-
-        if (this.getOcurrencia() > that.getOcurrencia()) {
-            return 1;
-        }
-        else if (this.getOcurrencia() == that.getOcurrencia()) {
-            return 0;
-        }
-        else {
-            return -1;
-        }
     }
 
 }

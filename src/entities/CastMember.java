@@ -3,6 +3,7 @@ package entities;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import static java.lang.Integer.parseInt;
 
@@ -37,7 +38,7 @@ public class CastMember {
         this.birthDate = dateParser(metadata[6]);
         String[] birth = placeSeparator(metadata[7]);
         this.birthState = birth[1];
-        this.birthCountry = birth[2];
+        this.birthCountry = !metadata[7].isEmpty() ? metadata[7].toLowerCase(Locale.ROOT) : null;
         this.birthCity = birth[0];
         this.causeOfDeath = null;
         this.deathDate = dateParser(metadata[9]);

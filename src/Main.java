@@ -16,6 +16,7 @@ public class Main {
 
     static Scanner scanner = new Scanner(System.in);
     static boolean datosCargados = false;
+    static Calendar calendar = new GregorianCalendar();
 
     // cast members
     static ArrayListImpl<CastMember> peopleList = new ArrayListImpl<>(300000);
@@ -28,7 +29,6 @@ public class Main {
 
     // movie cast members
     static ArrayListImpl<MovieCastMember> characters = new ArrayListImpl<>(835494);
-    static HashCerrado<String, ArrayListImpl<MovieCastMember>> peopleByCountry = new HashCerrado<>(300, 0.75);
 
     public static void main(String[] args){
         while(true){
@@ -107,17 +107,31 @@ public class Main {
                 primeraConsulta();
                 long endTime = System.currentTimeMillis();
                 System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
+
             } else if (seleccionConsulta == 2){
-//                segundaConsulta();
+                long startTime = System.currentTimeMillis();
+                segundaConsulta();
+                long endTime = System.currentTimeMillis();
+                System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
+
             } else if (seleccionConsulta == 3){
                 long startTime = System.currentTimeMillis();
                 terceraConsulta();
                 long endTime = System.currentTimeMillis();
                 System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
+
             } else if (seleccionConsulta == 4){
+                long startTime = System.currentTimeMillis();
                 cuartaConsulta();
+                long endTime = System.currentTimeMillis();
+                System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
+
             } else if (seleccionConsulta == 5){
+                long startTime = System.currentTimeMillis();
 //                quintaConsulta();
+                long endTime = System.currentTimeMillis();
+                System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
+
             } else if (seleccionConsulta == 6){
                 break;
             }
@@ -204,17 +218,6 @@ public class Main {
                 valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
                 MovieCastMember movieCM = new MovieCastMember(valores);
                 characters.add(movieCM);
-                String country = getCountryFromMovieCM(movieCM);
-                if (country != null) {
-                    if (!peopleByCountry.contains(country)) {
-                        ArrayListImpl<MovieCastMember> tempCountryList = new ArrayListImpl<>(3000);
-                        tempCountryList.add(movieCM);
-                        peopleByCountry.put(country, tempCountryList);
-                    } else {
-                        ArrayListImpl<MovieCastMember> tempList = peopleByCountry.get(country);
-                        tempList.add(movieCM);
-                    }
-                }
             }
         }
 
@@ -272,21 +275,50 @@ public class Main {
     }
 
     public static void segundaConsulta() {
-        long startTime = System.currentTimeMillis();
-        String[] countries = new String[4];
-        countries[0] = "USA";
-        countries[1] = "Italy";
-        countries[2] = "France";
-        countries[3] = "UK";
 
-        for (int i = 0; i < 4; i++) {
-            ArrayListImpl<MovieCastMember> tempList = peopleByCountry.get(countries[i]);
+        String[] countries = new String[4];
+        countries[0] = "usa";
+        countries[1] = "italy";
+        countries[2] = "france";
+        countries[3] = "uk";
+
+        String str = "hola";
+        boolean bool = str.contains("uk") && !str.contains("ukraine");
+
+        HashCerrado<String, Integer> deathHash = new HashCerrado<>(5000);
+        ArrayListImpl<CauseOcurrence> causes = new ArrayListImpl<>(5000);
+        ArrayListImpl<MovieCastMember> directors = categoryHash.get("director");
+        ArrayListImpl<MovieCastMember> producers = categoryHash.get("producer");
+
+        for (int i = 0; i < directors.size(); i++) {
+            CastMember director = peopleHash.get(directors.get(i).getActorID());
+
+            if ((director.getBirthCountry().contains("usa") || director.getBirthCountry().contains("uk") ||
+                    director.getBirthCountry().contains("italy") || director.getBirthCountry().contains("france"))
+                    && director.getBirthCountry().contains("ukraine")) {
+
+                if (deathHash.contains(new CauseOcurrence(director.getCauseOfDeath()))) { // si la causa de muerte ya esta registrada
+                 
+                }
+
+
+
+
+
+
+            }
+
+
+
+
+
+
 
             for (int j = 0; j < tempList.size(); j++) {
                 if (tempList.get(j).getCategory().equals("director") || tempList.get(j).getCategory().equals("producer")) {
                     CauseOfDeath tempCause = peopleHash.get(tempList.get(j).getActorID()).getCauseOfDeath();
                     if (tempCause != null) {
-                        tempCause.incrementOcurrencia();
+                        tempCause.incrementOcurrence();
                     }
                 }
             }
@@ -303,17 +335,17 @@ public class Main {
 
         for (int i = deathCauses.size() - 1; i > deathCauses.size() - 6; i--) {
             System.out.println("Causa de muerte:" + deathCauses.get(i).getName() + "\n" +
-                    "Cantidad de personas:" + deathCauses.get(i).getOcurrencia());
+                    "Cantidad de personas:" + deathCauses.get(i).getOcurrence());
         }
-        long endTime = System.currentTimeMillis();
-        System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
 
         // FALTA RESETEAR OCURRENCIAS
-
     }
 
     public static void cuartaConsulta() {
-        long startTime = System.currentTimeMillis();
+        ArrayListImpl<MovieCastMember> actor = castMemberHash.get("actor");
+        ArrayListImpl<MovieCastMember> actress = castMemberHash.get("actress");
+
+
         ArrayListImpl<Year> maleYears = new ArrayListImpl<>(500);
         ArrayListImpl<Year> femaleYears = new ArrayListImpl<>(500);
 
@@ -361,9 +393,6 @@ public class Main {
         System.out.println("hombres:" + maleYears.get(maleYears.size()-1).getOcurrencias());
         System.out.println("mujeres:" + femaleYears.get(femaleYears.size()-1).getYear());
         System.out.println("mujeres:" + femaleYears.get(femaleYears.size()-1).getOcurrencias());
-
-        long endTime = System.currentTimeMillis();
-        System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
     }
 
     private static void terceraConsulta() {
