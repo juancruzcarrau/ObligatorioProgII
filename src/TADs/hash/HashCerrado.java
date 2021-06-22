@@ -219,4 +219,15 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
 
         return keys;
     }
+
+    public ArrayListImpl<T> getValues(){
+        ArrayListImpl<T> values = new ArrayListImpl<>(amountOfItems);
+        for (NodoHashCerrado<K, T> nodo : table) {
+            if(nodo != null){
+                values.add(nodo.getData());
+            }
+        }
+
+        return values;
+    }
 }
