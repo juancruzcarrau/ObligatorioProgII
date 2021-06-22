@@ -1,6 +1,6 @@
 package entities;
 
-import TADs.listaSimpleFC.ListaEnlazada;
+import TADs.arrayList.ArrayListImpl;
 
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
@@ -11,7 +11,8 @@ public class MovieRating {
     private final int totalVotes;
     private final float meanVote;
     private final float medianVote;
-    private ListaEnlazada<Rating> votesRating;
+    private ArrayListImpl<Integer> votesRating;
+    private ArrayListImpl<Rating> listaRatings;
 
     public MovieRating(String[] metadata) {
         this.weightedAverage = parseFloat(metadata[1]);
@@ -19,16 +20,27 @@ public class MovieRating {
         this.meanVote = parseFloat(metadata[3]);
         this.medianVote = parseFloat(metadata[4]);
 
-        ListaEnlazada<Rating> listaRatings = new ListaEnlazada<>();
+        this.votesRating = new ArrayListImpl<>(10);
+        this.votesRating.add(parseInt(metadata[5]));
+        this.votesRating.add(parseInt(metadata[6]));
+        this.votesRating.add(parseInt(metadata[7]));
+        this.votesRating.add(parseInt(metadata[9]));
+        this.votesRating.add(parseInt(metadata[10]));
+        this.votesRating.add(parseInt(metadata[11]));
+        this.votesRating.add(parseInt(metadata[12]));
+        this.votesRating.add(parseInt(metadata[13]));
+        this.votesRating.add(parseInt(metadata[14]));
 
+//        for (int i = 5; i <= 14; i = i + 2) {
+//            votesRating.add(parseInt(metadata[i]));
+//        }
+
+        this.listaRatings = new ArrayListImpl<>(15);
         for (int i = 15; i <= 48; i = i + 2) {
             if(!metadata[i].isEmpty() && !metadata[i+1].isEmpty()){
-                Rating rating = new Rating(parseFloat(metadata[i]), parseFloat(metadata[i+1]));
-                listaRatings.add(rating);
+                listaRatings.add( new Rating(parseFloat(metadata[i]), parseFloat(metadata[i+1])));
             }
         }
-
-        this.votesRating = listaRatings;
     }
 
     public float getWeightedAverage() {
@@ -47,18 +59,11 @@ public class MovieRating {
         return medianVote;
     }
 
-    public ListaEnlazada<Rating> getVotesRating() {
+    public ArrayListImpl<Integer> getVotesRating() {
         return votesRating;
     }
 
-    private ListaEnlazada<String> listFromString (String s) {
-        ListaEnlazada<String> list = new ListaEnlazada<>();
-        String[] array = s.split(",");
-
-        for (String st : array) {
-            list.add(st);
-        }
-
-        return list;
+    public ArrayListImpl<Rating> getListaRatings() {
+        return listaRatings;
     }
 }

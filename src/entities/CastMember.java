@@ -17,11 +17,6 @@ public class CastMember {
     private final String birthState;
     private final String birthCountry;
     private final String birthCity;
-
-    public void setCauseOfDeath(CauseOfDeath causeOfDeath) {
-        this.causeOfDeath = causeOfDeath;
-    }
-
     private CauseOfDeath causeOfDeath;
     private final Date deathDate;
     private final String deathState;
@@ -206,6 +201,10 @@ public class CastMember {
         }
 
         return date;
+    }
+
+    public void setCauseOfDeath(CauseOfDeath causeOfDeath) {
+        this.causeOfDeath = causeOfDeath;
     }
 
 }
