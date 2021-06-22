@@ -282,66 +282,27 @@ public class Main {
         HashCerrado<CauseOfDeath, CauseOcurrence> deathHash = new HashCerrado<>(5000);
         ArrayListImpl<MovieCastMember> directors = categoryHash.get("director");
         ArrayListImpl<MovieCastMember> producers = categoryHash.get("producer");
+        ArrayListImpl<MovieCastMember> dirprod = directors.concatenate(producers);
 
+        for (int i = 0; i < dirprod.size(); i++) {
 
-        for (int i = 0; i < actprod.size(); i++) {
+            CastMember person = peopleHash.get(dirprod.get(i).getActorID());
 
-            CastMember person = null;
-            try {
-                person = peopleHash.get(directors.get(i).getActorID());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            if (person.getBirthCountry() != null) {
+                if (!person.getBirthCountry().equals("") && person.getCauseOfDeath() != null) {
 
-            if (person != null) {
-                if (person.getBirthCountry() != null) {
-                    if (!person.getBirthCountry().equals("") && person.getCauseOfDeath() != null) {
+                    if ((person.getBirthCountry().contains("usa") || person.getBirthCountry().contains("uk") ||
+                            person.getBirthCountry().contains("italy") || person.getBirthCountry().contains("france"))
+                            && !person.getBirthCountry().contains("ukraine")) {
 
-                        if ((person.getBirthCountry().contains("usa") || person.getBirthCountry().contains("uk") ||
-                                person.getBirthCountry().contains("italy") || person.getBirthCountry().contains("france"))
-                                && !person.getBirthCountry().contains("ukraine")) {
-
-                            if (deathHash.contains(person.getCauseOfDeath())) { // si la causa de muerte ya esta registrada
-                                CauseOcurrence ocurrence = deathHash.get(person.getCauseOfDeath());
-                                ocurrence.incrementOcurrence();
-                            } else { // si no esta registrada, la creo
-                                CauseOcurrence ocurrence = new CauseOcurrence(person.getCauseOfDeath());
-                                deathHash.put(person.getCauseOfDeath(), ocurrence);
-                            }
-
+                        if (deathHash.contains(person.getCauseOfDeath())) { // si la causa de muerte ya esta registrada
+                            CauseOcurrence ocurrence = deathHash.get(person.getCauseOfDeath());
+                            ocurrence.incrementOcurrence();
+                        } else { // si no esta registrada, la creo
+                            CauseOcurrence ocurrence = new CauseOcurrence(person.getCauseOfDeath());
+                            deathHash.put(person.getCauseOfDeath(), ocurrence);
                         }
-                    }
-                }
-            }
-        }
 
-        for (int i = 0; i < producers.size(); i++) {
-
-            CastMember producer = null;
-            try {
-                producer = peopleHash.get(producers.get(i).getActorID());
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (producer != null) {
-                if (producer.getBirthCountry() != null) {
-                    if (!producer.getBirthCountry().equals("") && producer.getCauseOfDeath() != null) {
-
-                        if ((producer.getBirthCountry().contains("usa") || producer.getBirthCountry().contains("uk") ||
-                                producer.getBirthCountry().contains("italy") || producer.getBirthCountry().contains("france"))
-                                && !producer.getBirthCountry().contains("ukraine")) {
-
-                            if (deathHash.contains(producer.getCauseOfDeath())) { // si la causa de muerte ya esta registrada
-                                CauseOcurrence ocurrence = deathHash.get(producer.getCauseOfDeath());
-                                ocurrence.incrementOcurrence();
-                            } else {
-                                CauseOcurrence ocurrence = new CauseOcurrence(producer.getCauseOfDeath());
-                                deathHash.put(producer.getCauseOfDeath(), ocurrence);
-                            }
-
-                        }
                     }
                 }
             }
