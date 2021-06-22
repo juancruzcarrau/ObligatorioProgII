@@ -103,7 +103,6 @@ public class Main {
                 primeraConsulta();
                 long endTime = System.currentTimeMillis();
                 System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
-
             } else if (seleccionConsulta == 2){
                 long startTime = System.currentTimeMillis();
                 segundaConsulta();
@@ -242,25 +241,27 @@ public class Main {
 
     private static void primeraConsulta() {
 
-/*        HashCerrado<String, Apariciones> hashDeActores = new HashCerrado<>(10000);
-        for (int i = 0; i < characters.size(); i++) {
-            MovieCastMember castMember = characters.get(i);
-            if (castMember.getCategory().equals("actor") || castMember.getCategory().equals("actress")){
-                if (!hashDeActores.contains(castMember.getActorID())) {
-                    hashDeActores.put(castMember.getActorID(), new Apariciones(castMember, 1));
-                } else {
-                    Apariciones aparicionesDeCastMember = hashDeActores.get(castMember.getActorID());
-                    aparicionesDeCastMember.agregarAparicion();
-                }
+        HashCerrado<String, Apariciones> hashDeActoresYActrices = new HashCerrado<>(300000);
+        ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");
+        ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");
+        ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices);
+
+        for (int i = 0; i < listaDeActoresYActrices.size(); i++) {
+            MovieCastMember castMember = listaDeActoresYActrices.get(i);
+            if (!hashDeActoresYActrices.contains(castMember.getActorID())) {
+                hashDeActoresYActrices.put(castMember.getActorID(), new Apariciones(castMember, 1));
+            } else {
+                Apariciones aparicionesDeCastMember = hashDeActoresYActrices.get(castMember.getActorID());
+                aparicionesDeCastMember.agregarAparicion();
             }
         }
 
-        ArrayListImpl<String> aparicionesKeys = hashDeActores.getKeys();
+        ArrayListImpl<String> aparicionesKeys = hashDeActoresYActrices.getKeys();
         ArrayListImpl<Apariciones> aparicionesList = new ArrayListImpl<>(aparicionesKeys.size());
         for (int i = 0; i < aparicionesKeys.size(); i++) {
             try {
                 String key = aparicionesKeys.get(i);
-                Apariciones apariciones = hashDeActores.get(key);
+                Apariciones apariciones = hashDeActoresYActrices.get(key);
                 aparicionesList.add(apariciones);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -273,7 +274,7 @@ public class Main {
             CastMember castMember = peopleHash.get(aparicionesList.get(i-1).getActor().getActorID());
             System.out.println("Nombre actor/actriz: " + castMember.getName());
             System.out.println("Cantidad de apariciones: " + aparicionesList.get(i-1).getCantidadDeApariciones());
-        }*/
+        }
 
     }
 
@@ -417,7 +418,7 @@ public class Main {
     }
 
     private static void terceraConsulta() {
-/*
+        ArrayListImpl<Movie> moviesList = moviesHash.getValues();
         ArrayListImpl<Movie> moviesInYears = new ArrayListImpl<>(5000); //Numero inicial arbitrario
 
         int fechaInicio = 1950; //Corresponde al inicio de 1950
@@ -439,10 +440,13 @@ public class Main {
             actorsInMovies.put(moviesInYears.get(i).getImbdTitleId(), new ArrayListImpl<>(5));
         }
 
-        for (int i = 0; i < characters.size(); i++) {
-            if(moviesIdList.contains(characters.get(i).getMovieID()) &&
-                    (characters.get(i).getCategory().equals("actor") || characters.get(i).getCategory().equals("actress"))){
-                actorsInMovies.get(characters.get(i).getMovieID()).add(characters.get(i).getActorID());
+        ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");
+        ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");
+        ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices);
+
+        for (int i = 0; i < listaDeActoresYActrices.size(); i++) {
+            if(moviesIdList.contains(listaDeActoresYActrices.get(i).getMovieID())){
+                actorsInMovies.get(listaDeActoresYActrices.get(i).getMovieID()).add(listaDeActoresYActrices.get(i).getActorID());
             }
         }
 
@@ -471,7 +475,6 @@ public class Main {
             }
 
         }
-*/
 
     }
 
