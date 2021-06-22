@@ -6,6 +6,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import entities.*;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.InputMismatchException;
@@ -113,7 +114,10 @@ public class Main {
             } else if (seleccionConsulta == 4){
 //                cuartaConsulta();
             } else if (seleccionConsulta == 5){
-//                quintaConsulta();
+                long startTime = System.currentTimeMillis();
+                quintaConsulta();
+                long endTime = System.currentTimeMillis();
+                System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
             } else if (seleccionConsulta == 6){
                 break;
             }
@@ -345,6 +349,47 @@ public class Main {
 
         }
 
+    }
+
+    private static void quintaConsulta(){
+        ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");
+        ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");
+        ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices);
+
+        ArrayListImpl<Movie> moviesAlreadyAccounted = new ArrayListImpl<>(50000);
+        HashCerrado<String, Ocurrencias<String>> hashGeneros = new HashCerrado<>(15);
+
+        for (int i = 0; i < listaDeActoresYActrices.size(); i++) {
+            MovieCastMember movieCM = listaDeActoresYActrices.get(i);
+
+            if(peopleHash.get(movieCM.getActorID()).getChildren() >= 2){
+                Movie movie = moviesHash.get(movieCM.getMovieID());
+
+                if(!moviesAlreadyAccounted.contains(movie)){
+                    moviesAlreadyAccounted.add(movie);
+
+                    for (int j = 0; j < movie.getGenre().size(); j++) {
+                        Ocurrencias<String> ocurrenciasGenero;
+                        if(hashGeneros.contains(movie.getGenre().get(j))){
+                            ocurrenciasGenero = hashGeneros.get(movie.getGenre().get(j));
+                        } else {
+                            ocurrenciasGenero = new Ocurrencias<>(movie.getGenre().get(j), 0);
+                            hashGeneros.put(movie.getGenre().get(j), ocurrenciasGenero);
+                        }
+
+                        ocurrenciasGenero.incrementarOcurrencias();
+                    }
+                }
+            }
+        }
+
+        ArrayListImpl<Ocurrencias<String>> listaOcurrencias = hashGeneros.getValues();
+        listaOcurrencias.sort();
+
+        for (int i = listaOcurrencias.size() - 1; i > listaOcurrencias.size() - 11; i--) {
+            System.out.println("Genero pelicula:" + listaOcurrencias.get(i).getObject());
+            System.out.println("Cantidad:" + listaOcurrencias.get(i).getOcurrences() + '\n');
+        }
     }
 
 }
