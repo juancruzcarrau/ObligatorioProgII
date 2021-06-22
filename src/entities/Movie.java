@@ -41,7 +41,7 @@ public class Movie implements Comparable<Movie>{
         this.originalTitle = metadata[2];
         this.year = !metadata[3].isEmpty() ? parseInt(metadata[3].replaceAll("[^0-9]","")) : 0;
         this.datePublished = parseDate(metadata[4]);
-        this.genre = listFromString(metadata[5]);
+        this.genre = listFromString(metadata[5].replace(" ", ""));
         this.duration = !metadata[6].isEmpty() ? parseInt(metadata[6]) : 0;
         this.country = listFromString(metadata[7]);
         this.language = metadata[8];
@@ -78,7 +78,6 @@ public class Movie implements Comparable<Movie>{
         }
 
     }
-
 
     public String getImbdTitleId() {
         return imbdTitleId;

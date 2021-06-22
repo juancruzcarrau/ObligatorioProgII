@@ -6,6 +6,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import entities.*;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.*;
 
@@ -122,7 +123,7 @@ public class Main {
 
             } else if (seleccionConsulta == 5){
                 long startTime = System.currentTimeMillis();
-//                quintaConsulta();
+                quintaConsulta();
                 long endTime = System.currentTimeMillis();
                 System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
 
@@ -322,6 +323,67 @@ public class Main {
 
     }
 
+    private static void terceraConsulta() {
+        ArrayListImpl<Movie> moviesList = moviesHash.getValues();
+        ArrayListImpl<Movie> moviesInYears = new ArrayListImpl<>(5000); //Numero inicial arbitrario
+
+        int fechaInicio = 1950; //Corresponde al inicio de 1950
+        int fechaFin = 1960; //Corresponde al fin de 1960
+
+        for (int i = 0; i < moviesList.size(); i++) {
+            Movie movie = moviesList.get(i);
+            if(movie.getYear() >= fechaInicio && movie.getYear() <= fechaFin){
+                moviesInYears.add(movie);
+            }
+        }
+
+        moviesInYears.sort();
+        ArrayListImpl<String> moviesIdList = new ArrayListImpl<>(14);
+        HashCerrado<String, ArrayListImpl<String>> actorsInMovies = new HashCerrado<>(19);
+
+        for (int i = moviesInYears.size() - 1; i > moviesInYears.size()-15; i--) {
+            moviesIdList.add(moviesInYears.get(i).getImbdTitleId());
+            actorsInMovies.put(moviesInYears.get(i).getImbdTitleId(), new ArrayListImpl<>(5));
+        }
+
+        ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");
+        ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");
+        ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices);
+
+        for (int i = 0; i < listaDeActoresYActrices.size(); i++) {
+            if(moviesIdList.contains(listaDeActoresYActrices.get(i).getMovieID())){
+                actorsInMovies.get(listaDeActoresYActrices.get(i).getMovieID()).add(listaDeActoresYActrices.get(i).getActorID());
+            }
+        }
+
+        for (int i = moviesInYears.size() - 1; i > moviesInYears.size()-15; i--) {
+            ArrayListImpl<String> actoresId = actorsInMovies.get(moviesInYears.get(i).getImbdTitleId());
+            ArrayListImpl<CastMember> actores = new ArrayListImpl<>(actoresId.size());
+
+            for (int j = 0; j < actoresId.size(); j++) {
+                actores.add(peopleHash.get(actoresId.get(j)));
+            }
+
+            int heightSum = 0;
+            int amountOfActors = 0;
+
+            for (int j = 0; j < actores.size(); j++) {
+                if(actores.get(j).getHeight() != 0){
+                    heightSum += actores.get(j).getHeight();
+                    amountOfActors++;
+                }
+            }
+
+            if (amountOfActors != 0){
+                System.out.println("Id película: " + moviesInYears.get(i).getImbdTitleId());
+                System.out.println("Nombre: " + moviesInYears.get(i).getTitle());
+                System.out.println("Altura promedio de actores: " + heightSum/(double) amountOfActors + '\n');
+            }
+
+        }
+
+    }
+
     public static void cuartaConsulta() {
         ArrayListImpl<MovieCastMember> actors = categoryHash.get("actor");
         ArrayListImpl<MovieCastMember> actresses = categoryHash.get("actress");
@@ -388,65 +450,45 @@ public class Main {
         System.out.println('\t' + "Cantidad: " + ocuMujeres);
     }
 
-    private static void terceraConsulta() {
-        ArrayListImpl<Movie> moviesList = moviesHash.getValues();
-        ArrayListImpl<Movie> moviesInYears = new ArrayListImpl<>(5000); //Numero inicial arbitrario
-
-        int fechaInicio = 1950; //Corresponde al inicio de 1950
-        int fechaFin = 1960; //Corresponde al fin de 1960
-
-        for (int i = 0; i < moviesList.size(); i++) {
-            Movie movie = moviesList.get(i);
-            if(movie.getYear() >= fechaInicio && movie.getYear() <= fechaFin){
-                moviesInYears.add(movie);
-            }
-        }
-
-        moviesInYears.sort();
-        ArrayListImpl<String> moviesIdList = new ArrayListImpl<>(14);
-        HashCerrado<String, ArrayListImpl<String>> actorsInMovies = new HashCerrado<>(19);
-
-        for (int i = moviesInYears.size() - 1; i > moviesInYears.size()-15; i--) {
-            moviesIdList.add(moviesInYears.get(i).getImbdTitleId());
-            actorsInMovies.put(moviesInYears.get(i).getImbdTitleId(), new ArrayListImpl<>(5));
-        }
-
+    private static void quintaConsulta(){
         ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");
         ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");
         ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices);
 
+        ArrayListImpl<Movie> moviesAlreadyAccounted = new ArrayListImpl<>(50000);
+        HashCerrado<String, Ocurrencias<String>> hashGeneros = new HashCerrado<>(15);
+
         for (int i = 0; i < listaDeActoresYActrices.size(); i++) {
-            if(moviesIdList.contains(listaDeActoresYActrices.get(i).getMovieID())){
-                actorsInMovies.get(listaDeActoresYActrices.get(i).getMovieID()).add(listaDeActoresYActrices.get(i).getActorID());
-            }
-        }
+            MovieCastMember movieCM = listaDeActoresYActrices.get(i);
 
-        for (int i = moviesInYears.size() - 1; i > moviesInYears.size()-15; i--) {
-            ArrayListImpl<String> actoresId = actorsInMovies.get(moviesInYears.get(i).getImbdTitleId());
-            ArrayListImpl<CastMember> actores = new ArrayListImpl<>(actoresId.size());
+            if(peopleHash.get(movieCM.getActorID()).getChildren() >= 2){
+                Movie movie = moviesHash.get(movieCM.getMovieID());
 
-            for (int j = 0; j < actoresId.size(); j++) {
-                actores.add(peopleHash.get(actoresId.get(j)));
-            }
+                if(!moviesAlreadyAccounted.contains(movie)){
+                    moviesAlreadyAccounted.add(movie);
 
-            int heightSum = 0;
-            int amountOfActors = 0;
+                    for (int j = 0; j < movie.getGenre().size(); j++) {
+                        Ocurrencias<String> ocurrenciasGenero;
+                        if(hashGeneros.contains(movie.getGenre().get(j))){
+                            ocurrenciasGenero = hashGeneros.get(movie.getGenre().get(j));
+                        } else {
+                            ocurrenciasGenero = new Ocurrencias<>(movie.getGenre().get(j), 0);
+                            hashGeneros.put(movie.getGenre().get(j), ocurrenciasGenero);
+                        }
 
-            for (int j = 0; j < actores.size(); j++) {
-                if(actores.get(j).getHeight() != 0){
-                    heightSum += actores.get(j).getHeight();
-                    amountOfActors++;
+                        ocurrenciasGenero.incrementarOcurrencias();
+                    }
                 }
             }
-
-            if (amountOfActors != 0){
-                System.out.println("Id película: " + moviesInYears.get(i).getImbdTitleId());
-                System.out.println("Nombre: " + moviesInYears.get(i).getTitle());
-                System.out.println("Altura promedio de actores: " + heightSum/(double) amountOfActors + '\n');
-            }
-
         }
 
+        ArrayListImpl<Ocurrencias<String>> listaOcurrencias = hashGeneros.getValues();
+        listaOcurrencias.sort();
+
+        for (int i = listaOcurrencias.size() - 1; i > listaOcurrencias.size() - 11; i--) {
+            System.out.println("Genero pelicula:" + listaOcurrencias.get(i).getObject());
+            System.out.println("Cantidad:" + listaOcurrencias.get(i).getOcurrences() + '\n');
+        }
     }
 
 }
