@@ -14,7 +14,7 @@ public class CastMember {
     private final String birthName;
     private final int height;
     private final String bio;
-    private final Date birthDate;
+    private final int birthDate;
     private final String birthState;
     private final String birthCountry;
     private final String birthCity;
@@ -35,10 +35,10 @@ public class CastMember {
         this.birthName = metadata[2];
         this.height = !metadata[3].isEmpty() ? parseInt(metadata[3]) : 0;
         this.bio = metadata[4];
-        this.birthDate = dateParser(metadata[6]);
+        this.birthDate = yearParser(metadata[6]);
         String[] birth = placeSeparator(metadata[7]);
         this.birthState = birth[1];
-        this.birthCountry = !metadata[7].isEmpty() ? metadata[7].toLowerCase(Locale.ROOT) : null;
+        this.birthCountry = !metadata[7].isEmpty() ? metadata[7] : null;
         this.birthCity = birth[0];
         this.causeOfDeath = null;
         this.deathDate = dateParser(metadata[9]);
@@ -73,7 +73,7 @@ public class CastMember {
         return bio;
     }
 
-    public Date getBirthDate() {
+    public int getBirthDate() {
         return birthDate;
     }
 
@@ -202,6 +202,25 @@ public class CastMember {
         }
 
         return date;
+    }
+
+    private int yearParser(String str) {
+        int ano = -1;
+        String temp;
+        if (str != null) {
+            if (!str.equals("")) {
+
+                temp = str.replaceAll("[^0-9]", "");
+
+                if (!temp.equals("")) {
+                    temp = temp.substring(0, Math.min(temp.length(), 4));
+                    ano = parseInt(temp);
+                }
+
+            }
+        }
+
+        return ano;
     }
 
     public void setCauseOfDeath(CauseOfDeath causeOfDeath) {

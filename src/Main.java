@@ -7,9 +7,7 @@ import entities.*;
 
 import java.io.*;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
@@ -25,6 +23,7 @@ public class Main {
 
     // movie cast members
     static HashCerrado<String, ArrayListImpl<MovieCastMember>> categoryHash = new HashCerrado<>(15);
+    static Calendar calendar = new GregorianCalendar();
 
     public static void main(String[] args){
         while(true){
@@ -291,9 +290,8 @@ public class Main {
             if (person.getBirthCountry() != null) {
                 if (!person.getBirthCountry().equals("") && person.getCauseOfDeath() != null) {
 
-                    if ((person.getBirthCountry().contains("usa") || person.getBirthCountry().contains("uk") ||
-                            person.getBirthCountry().contains("italy") || person.getBirthCountry().contains("france"))
-                            && !person.getBirthCountry().contains("ukraine")) {
+                    if (person.getBirthCountry().contains("USA") || person.getBirthCountry().contains("UK") ||
+                            person.getBirthCountry().contains("Italy") || person.getBirthCountry().contains("France")) {
 
                         if (deathHash.contains(person.getCauseOfDeath())) { // si la causa de muerte ya esta registrada
                             CauseOcurrence ocurrence = deathHash.get(person.getCauseOfDeath());
@@ -326,56 +324,68 @@ public class Main {
 
     public static void cuartaConsulta() {
         ArrayListImpl<MovieCastMember> actors = categoryHash.get("actor");
-        ArrayListImpl<MovieCastMember> actress = categoryHash.get("actress");
+        ArrayListImpl<MovieCastMember> actresses = categoryHash.get("actress");
         ArrayListImpl<Year> maleYears = new ArrayListImpl<>(500);
         ArrayListImpl<Year> femaleYears = new ArrayListImpl<>(500);
-        /*
+        HashCerrado<Integer, Year> maleYearsHash = new HashCerrado<>(500);
+        HashCerrado<Integer, Year> femaleYearsHash = new HashCerrado<>(500);
 
-       for (int i = 0; i < actors.size(); i++) {
+        for (int i = 0; i < actors.size(); i++) {
 
-                MovieCastMember actor = actors.get(i);
+           CastMember actor = peopleHash.get(actors.get(i).getActorID());
 
+           if (actor.getBirthDate() != -1) {
+               //calendar.setTime(actor.getBirthDate());
+               //int tempYear = calendar.get(Calendar.YEAR);
+               int tempYear = actor.getBirthDate();
 
-                if (person.getBirthDate() != null) {
-                    calendar.setTime(person.getBirthDate());
-                    int tempYear = calendar.get(Calendar.YEAR);
-                    Year year = new Year(tempYear);
-                    if (!maleYears.contains(year)) {
-                        maleYears.add(year);
-                    } else {
-                        maleYears.get(tempYear).incrementOcurrencias();     // FIXME: NUNCA ENTRA
-                    }
-                }
+               if (maleYearsHash.contains(tempYear)) {
+                   Year yearWithOc = maleYearsHash.get(tempYear);
+                   yearWithOc.incrementOcurrencias();
+               } else {
+                   Year yearWithOc = new Year(tempYear);
+                   maleYearsHash.put(tempYear, yearWithOc);
+               }
 
-
-            }
-
-            if (characters.get(i).getCategory().equals("actress")) {
-                CastMember person = peopleHash.get(characters.get(i).getActorID());
-
-                if (person.getBirthDate() != null) {
-                    calendar.setTime(person.getBirthDate());
-                    int tempYear = calendar.get(Calendar.YEAR);
-                    Year year = new Year(tempYear);
-                    if (!femaleYears.contains(year)) {
-                        femaleYears.add(year);
-                    } else {
-                        femaleYears.get(tempYear).incrementOcurrencias();
-                    }
-                }
-
-            }
-
+           }
         }
 
-        maleYears.sort();
-        femaleYears.sort();
+        ArrayListImpl<Year> menY = maleYearsHash.getValues();
+        menY.sort();
 
-        System.out.println("hombres:" + maleYears.get(maleYears.size()-1).getYear());
-        System.out.println("hombres:" + maleYears.get(maleYears.size()-1).getOcurrencias());
-        System.out.println("mujeres:" + femaleYears.get(femaleYears.size()-1).getYear());
-        System.out.println("mujeres:" + femaleYears.get(femaleYears.size()-1).getOcurrencias());
-        */
+        for (int i = 0; i < actresses.size(); i++) {
+
+            CastMember actress = peopleHash.get(actresses.get(i).getActorID());
+
+            if (actress.getBirthDate() != -1) {
+                //calendar.setTime(actress.getBirthDate());
+                //int tempYear = calendar.get(Calendar.YEAR);
+                int tempYear = actress.getBirthDate();
+
+                if (femaleYearsHash.contains(tempYear)) {
+                    Year yearWithOc = femaleYearsHash.get(tempYear);
+                    yearWithOc.incrementOcurrencias();
+                } else {
+                    Year yearWithOc = new Year(tempYear);
+                    femaleYearsHash.put(tempYear, yearWithOc);
+                }
+
+            }
+        }
+
+        ArrayListImpl<Year> womenY = femaleYearsHash.getValues();
+        womenY.sort();
+        int anoHombres = menY.get(menY.size()-1).getYear();
+        int ocuHombres = menY.get(menY.size()-1).getOcurrencias();
+        int anoMujeres = womenY.get(womenY.size()-1).getYear();
+        int ocuMujeres = womenY.get(womenY.size()-1).getOcurrencias();
+
+        System.out.println("Actores:");
+        System.out.println('\t' + "Año: " + anoHombres);
+        System.out.println('\t' + "Cantidad: " + ocuHombres + '\n');
+        System.out.println("Actrices:");
+        System.out.println('\t' + "Año: " + anoMujeres);
+        System.out.println('\t' + "Cantidad: " + ocuMujeres);
     }
 
     private static void terceraConsulta() {
