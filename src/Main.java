@@ -7,9 +7,7 @@ import entities.*;
 
 import java.io.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
