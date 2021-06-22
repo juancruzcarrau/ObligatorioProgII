@@ -7,13 +7,15 @@ import entities.*;
 
 import java.io.*;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 import java.util.*;
 
 public class Main {
 
     static Scanner scanner = new Scanner(System.in);
     static boolean datosCargados = false;
-    static Calendar calendar = new GregorianCalendar();
 
     // cast members
     static ArrayListImpl<CastMember> peopleList = new ArrayListImpl<>(300000);
@@ -21,7 +23,7 @@ public class Main {
     static ArrayListImpl<CauseOfDeath> deathCauses = new ArrayListImpl<>(10000);
 
     // movies
-    static ArrayListImpl<Movie> movies = new ArrayListImpl<>(86000);
+    static ArrayListImpl<Movie> moviesList = new ArrayListImpl<>(86000);
     static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(115000);
 
     // movie cast members
@@ -108,7 +110,10 @@ public class Main {
             } else if (seleccionConsulta == 2){
 //                segundaConsulta();
             } else if (seleccionConsulta == 3){
-//                terceraConsulta();
+                long startTime = System.currentTimeMillis();
+                terceraConsulta();
+                long endTime = System.currentTimeMillis();
+                System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
             } else if (seleccionConsulta == 4){
                 cuartaConsulta();
             } else if (seleccionConsulta == 5){
@@ -129,7 +134,7 @@ public class Main {
             while ((valores = csvReader.readNext()) != null) {
                 Movie movie = new Movie(valores);
                 moviesHash.put(movie.getImbdTitleId(), movie);
-                movies.add(movie);
+                moviesList.add(movie);
             }
         } catch (IOException | CsvValidationException | ParseException e) {
             //Nunca se deberia llegar aca
@@ -359,6 +364,63 @@ public class Main {
 
         long endTime = System.currentTimeMillis();
         System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
+    }
+
+    private static void terceraConsulta() {
+        ArrayListImpl<Movie> moviesInYears = new ArrayListImpl<>(5000); //Numero inicial arbitrario
+
+        int fechaInicio = 1950; //Corresponde al inicio de 1950
+        int fechaFin = 1960; //Corresponde al fin de 1960
+
+        for (int i = 0; i < moviesList.size(); i++) {
+            Movie movie = moviesList.get(i);
+            if(movie.getYear() >= fechaInicio && movie.getYear() <= fechaFin){
+                moviesInYears.add(movie);
+            }
+        }
+
+        moviesInYears.sort();
+        ArrayListImpl<String> moviesIdList = new ArrayListImpl<>(14);
+        HashCerrado<String, ArrayListImpl<String>> actorsInMovies = new HashCerrado<>(19);
+
+        for (int i = moviesInYears.size() - 1; i > moviesInYears.size()-15; i--) {
+            moviesIdList.add(moviesInYears.get(i).getImbdTitleId());
+            actorsInMovies.put(moviesInYears.get(i).getImbdTitleId(), new ArrayListImpl<>(5));
+        }
+
+        for (int i = 0; i < characters.size(); i++) {
+            if(moviesIdList.contains(characters.get(i).getMovieID()) &&
+                    (characters.get(i).getCategory().equals("actor") || characters.get(i).getCategory().equals("actress"))){
+                actorsInMovies.get(characters.get(i).getMovieID()).add(characters.get(i).getActorID());
+            }
+        }
+
+        for (int i = moviesInYears.size() - 1; i > moviesInYears.size()-15; i--) {
+            ArrayListImpl<String> actoresId = actorsInMovies.get(moviesInYears.get(i).getImbdTitleId());
+            ArrayListImpl<CastMember> actores = new ArrayListImpl<>(actoresId.size());
+
+            for (int j = 0; j < actoresId.size(); j++) {
+                actores.add(peopleHash.get(actoresId.get(j)));
+            }
+
+            int heightSum = 0;
+            int amountOfActors = 0;
+
+            for (int j = 0; j < actores.size(); j++) {
+                if(actores.get(j).getHeight() != 0){
+                    heightSum += actores.get(j).getHeight();
+                    amountOfActors++;
+                }
+            }
+
+            if (amountOfActors != 0){
+                System.out.println("Id película: " + moviesInYears.get(i).getImbdTitleId());
+                System.out.println("Nombre: " + moviesInYears.get(i).getTitle());
+                System.out.println("Altura promedio de actores: " + heightSum/(double) amountOfActors + '\n');
+            }
+
+        }
+
     }
 
 
