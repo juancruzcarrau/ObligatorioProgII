@@ -117,4 +117,12 @@ public class ArrayListImpl<T> implements ArrayList<T>{
         }
 
     }
+
+    public ArrayListImpl<T> concatenate(ArrayListImpl<T> lista){
+        ArrayListImpl<T> concatenation = new ArrayListImpl<>(this.size() + lista.size());
+        System.arraycopy(this.array, 0, concatenation.array, 0, this.size());
+        System.arraycopy(lista.array, 0, concatenation.array, this.size(), lista.size());
+        concatenation.last = this.last + lista.last;
+        return concatenation;
+    }
 }
