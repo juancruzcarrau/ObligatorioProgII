@@ -14,6 +14,7 @@ import java.util.Scanner;
 public class Main {
 
     static Scanner scanner = new Scanner(System.in);
+    static boolean datosCargados = false;
 
     // cast members
     static ArrayListImpl<CastMember> peopleList = new ArrayListImpl<>(300000);
@@ -52,10 +53,16 @@ public class Main {
             }
 
             if(seleccion == 1){
-                long startTime = System.currentTimeMillis();
-                cargarDatos();
-                long endTime = System.currentTimeMillis();
-                System.out.println("Carga de datos exitosa, tiempo de ejecución de la carga:" + (endTime - startTime));
+                if (!datosCargados) {
+                    long startTime = System.currentTimeMillis();
+                    cargarDatos();
+                    long endTime = System.currentTimeMillis();
+                    System.out.println("Carga de datos exitosa, tiempo de ejecución de la carga:" + (endTime - startTime));
+
+                    datosCargados = true;
+                } else {
+                    System.out.println("Los datos ya se han cargado.");
+                }
             } else if (seleccion == 2){
                 ejectutarConsultas();
             } else if (seleccion == 3){
@@ -114,71 +121,7 @@ public class Main {
 
     }
 
-    private static void primeraConsulta() {
-
-        HashCerrado<String, Apariciones> hashDeActores = new HashCerrado<>(10000);
-        for (int i = 0; i < characters.size(); i++) {
-            MovieCastMember castMember = characters.get(i);
-            if (castMember.getCategory().equals("actor") || castMember.getCategory().equals("actress")){
-                if (!hashDeActores.contains(castMember.getActorID())) {
-                    hashDeActores.put(castMember.getActorID(), new Apariciones(castMember, 1));
-                } else {
-                    Apariciones aparicionesDeCastMember = hashDeActores.get(castMember.getActorID());
-                    aparicionesDeCastMember.agregarAparicion();
-                }
-            }
-//            if (castMember.getCategory().equals("actor") || castMember.getCategory().equals("actress")){
-//                Apariciones aparicion = null;
-//                for (int j = 0; j < listaDeActores.size(); j++) {
-//                    Apariciones temp = listaDeActores.get(j);
-//                    if(temp.getActor().getActorID().equals(castMember.getActorID())){
-//                        aparicion = temp;
-//                        break;
-//                    }
-//                }
-//
-//                if (aparicion == null){
-//                    aparicion = new Apariciones(castMember, 1);
-//                    listaDeActores.add(aparicion);
-//                }
-//
-//                aparicion.agregarAparicion();
-//            }
-        }
-
-        ArrayListImpl<String> aparicionesKeys = hashDeActores.getKeys();
-        ArrayListImpl<Apariciones> aparicionesList = new ArrayListImpl<>(aparicionesKeys.size());
-        for (int i = 0; i < aparicionesKeys.size(); i++) {
-            try {
-                String key = aparicionesKeys.get(i);
-                Apariciones apariciones = hashDeActores.get(key);
-                aparicionesList.add(apariciones);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        aparicionesList.sort();
-
-        for (int i = aparicionesList.size(); i > aparicionesList.size() - 5; i--) {
-            CastMember castMember = peopleHash.get(aparicionesList.get(i-1).getActor().getActorID());
-            System.out.println("Nombre actor/actriz: " + castMember.getName());
-            System.out.println("Cantidad de apariciones: " + aparicionesList.get(i-1).getCantidadDeApariciones());
-        }
-
-    }
-
     private static void cargarDatos() {
-
-        //Template carga
-        try (CSVReader csvReader = new CSVReader(new FileReader("dataset/IMDb movies.csv"))) {
-            String[] valores = null;
-            while ((valores = csvReader.readNext()) != null) {
-            }
-        } catch (IOException | CsvValidationException e) {
-            //Nunca se deberia llegar aca
-            e.printStackTrace();
-        }
 
         //Carga de peliculas
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
@@ -284,6 +227,60 @@ public class Main {
         }
 
         return country;
+    }
+
+    private static void primeraConsulta() {
+
+        HashCerrado<String, Apariciones> hashDeActores = new HashCerrado<>(10000);
+        for (int i = 0; i < characters.size(); i++) {
+            MovieCastMember castMember = characters.get(i);
+            if (castMember.getCategory().equals("actor") || castMember.getCategory().equals("actress")){
+                if (!hashDeActores.contains(castMember.getActorID())) {
+                    hashDeActores.put(castMember.getActorID(), new Apariciones(castMember, 1));
+                } else {
+                    Apariciones aparicionesDeCastMember = hashDeActores.get(castMember.getActorID());
+                    aparicionesDeCastMember.agregarAparicion();
+                }
+            }
+//            if (castMember.getCategory().equals("actor") || castMember.getCategory().equals("actress")){
+//                Apariciones aparicion = null;
+//                for (int j = 0; j < listaDeActores.size(); j++) {
+//                    Apariciones temp = listaDeActores.get(j);
+//                    if(temp.getActor().getActorID().equals(castMember.getActorID())){
+//                        aparicion = temp;
+//                        break;
+//                    }
+//                }
+//
+//                if (aparicion == null){
+//                    aparicion = new Apariciones(castMember, 1);
+//                    listaDeActores.add(aparicion);
+//                }
+//
+//                aparicion.agregarAparicion();
+//            }
+        }
+
+        ArrayListImpl<String> aparicionesKeys = hashDeActores.getKeys();
+        ArrayListImpl<Apariciones> aparicionesList = new ArrayListImpl<>(aparicionesKeys.size());
+        for (int i = 0; i < aparicionesKeys.size(); i++) {
+            try {
+                String key = aparicionesKeys.get(i);
+                Apariciones apariciones = hashDeActores.get(key);
+                aparicionesList.add(apariciones);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        aparicionesList.sort();
+
+        for (int i = aparicionesList.size(); i > aparicionesList.size() - 5; i--) {
+            CastMember castMember = peopleHash.get(aparicionesList.get(i-1).getActor().getActorID());
+            System.out.println("Nombre actor/actriz: " + castMember.getName());
+            System.out.println("Cantidad de apariciones: " + aparicionesList.get(i-1).getCantidadDeApariciones());
+        }
+
     }
 
     public static void segundaConsulta() {

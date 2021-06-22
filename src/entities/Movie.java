@@ -1,6 +1,6 @@
 package entities;
 
-import TADs.listaSimpleFC.ListaEnlazada;
+import TADs.arrayList.ArrayListImpl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,21 +9,21 @@ import java.util.Date;
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
 
-public class Movie {
+public class Movie implements Comparable<Movie>{
 
     private final String imbdTitleId;
     private final String title;
     private final String originalTitle;
     private final int year;
     private final Date datePublished;
-    private final ListaEnlazada<String> genre;
+    private final ArrayListImpl<String> genre;
     private final int duration;
-    private final ListaEnlazada<String> country;
+    private final ArrayListImpl<String> country;
     private final String language;
-    private final ListaEnlazada<String> director;
-    private final ListaEnlazada<String> writer;
+    private final ArrayListImpl<String> director;
+    private final ArrayListImpl<String> writer;
     private final String productionCompany;
-    private final ListaEnlazada<String> actors;
+    private final ArrayListImpl<String> actors;
     private final String description;
     private final float avgVote;
     private final int votes;
@@ -34,43 +34,6 @@ public class Movie {
     private final float reviewsFromUsers;
     private final float reviewsFromCritics;
     private MovieRating movieRating;
-
-
-    public Movie(String imbdTitleId, String title, String originalTitle,
-                 int year, Date datePublished, ListaEnlazada<String> genre,
-                 int duration, ListaEnlazada<String> country, String language,
-                 ListaEnlazada<String> director, ListaEnlazada<String> writer,
-                 String productionCompany, ListaEnlazada<String> actors,
-                 String description, float avgVote, int votes, String budget,
-                 String usaGrossIncome, String worldwideGrossIncome,
-                 float metaScore, float reviewsFromUsers,
-                 float reviewsFromCritics, MovieRating movieRating) {
-
-        this.imbdTitleId = imbdTitleId;
-        this.title = title;
-        this.originalTitle = originalTitle;
-        this.year = year;
-        this.datePublished = datePublished;
-        this.genre = genre;
-        this.duration = duration;
-        this.country = country;
-        this.language = language;
-        this.director = director;
-        this.writer = writer;
-        this.productionCompany = productionCompany;
-        this.actors = actors;
-        this.description = description;
-        this.avgVote = avgVote;
-        this.votes = votes;
-        this.budget = budget;
-        this.usaGrossIncome = usaGrossIncome;
-        this.worldwideGrossIncome = worldwideGrossIncome;
-        this.metaScore = metaScore;
-        this.reviewsFromUsers = reviewsFromUsers;
-        this.reviewsFromCritics = reviewsFromCritics;
-        this.movieRating = movieRating;
-
-    }
 
     public Movie(String[] metadata) throws ParseException {
         this.imbdTitleId = metadata[0];
@@ -137,7 +100,7 @@ public class Movie {
         return datePublished;
     }
 
-    public ListaEnlazada<String> getGenre() {
+    public ArrayListImpl<String> getGenre() {
         return genre;
     }
 
@@ -145,7 +108,7 @@ public class Movie {
         return duration;
     }
 
-    public ListaEnlazada<String> getCountry() {
+    public ArrayListImpl<String> getCountry() {
         return country;
     }
 
@@ -153,11 +116,11 @@ public class Movie {
         return language;
     }
 
-    public ListaEnlazada<String> getDirector() {
+    public ArrayListImpl<String> getDirector() {
         return director;
     }
 
-    public ListaEnlazada<String> getWriter() {
+    public ArrayListImpl<String> getWriter() {
         return writer;
     }
 
@@ -165,7 +128,7 @@ public class Movie {
         return productionCompany;
     }
 
-    public ListaEnlazada<String> getActors() {
+    public ArrayListImpl<String> getActors() {
         return actors;
     }
 
@@ -222,8 +185,8 @@ public class Movie {
         return sum;
     }
 
-    private ListaEnlazada<String> listFromString (String s) {
-        ListaEnlazada<String> list = new ListaEnlazada<>();
+    private ArrayListImpl<String> listFromString (String s) {
+        ArrayListImpl<String> list = new ArrayListImpl<>(10);
         String[] array = s.split(",");
 
         for (String st : array) {
@@ -233,4 +196,13 @@ public class Movie {
         return list;
     }
 
+    @Override
+    public int compareTo(Movie that) {
+        if(this.movieRating.getWeightedAverage() > that.movieRating.getWeightedAverage()){
+            return 1;
+        } else if (this.movieRating.getWeightedAverage() < that.movieRating.getWeightedAverage()) {
+            return -1;
+        }
+        return 0;
+    }
 }

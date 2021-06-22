@@ -1,6 +1,6 @@
 package entities;
 
-import TADs.listaSimpleFC.ListaEnlazada;
+import TADs.arrayList.ArrayListImpl;
 
 import static java.lang.Integer.parseInt;
 
@@ -11,7 +11,7 @@ public class MovieCastMember {
     private final String actorID;
     private final String category;
     private final String job;
-    private final ListaEnlazada<String> characters;
+    private final ArrayListImpl<String> characters;
 
     public MovieCastMember(String[] metadata) {
         this.movieID = metadata[0];
@@ -42,12 +42,12 @@ public class MovieCastMember {
         return job;
     }
 
-    public ListaEnlazada<String> getCharacters() {
+    public ArrayListImpl<String> getCharacters() {
         return characters;
     }
 
-    private ListaEnlazada<String> listFromString (String s) {
-        ListaEnlazada<String> list = new ListaEnlazada<>();
+    private ArrayListImpl<String> listFromString (String s) {
+        ArrayListImpl<String> list = new ArrayListImpl<>(10);
 
         s = s.replaceAll("\\[", "").replaceAll("\\]",""); // SACO [ ]
         s = s.replaceAll("\"","");

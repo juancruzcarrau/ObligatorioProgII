@@ -1,7 +1,5 @@
 package TADs.arrayList;
 
-import entities.CauseOfDeath;
-
 import java.util.Arrays;
 
 public class ArrayListImpl<T> implements ArrayList<T>{
