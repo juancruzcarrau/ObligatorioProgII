@@ -84,56 +84,12 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
         hasBeenDeleted = newHasBeenDeleted;
     }
 
-    private int getNextPrime(int size) {
-        int number = size + 1;
-
-        while(!isPrime(number)){
-            number++;
-        }
-
-        return number;
-    }
-
-    private boolean isPrime(int number){
-        double maxPosibleDivisor = Math.sqrt(number);
-        double divisor = 2;
-        while(divisor < maxPosibleDivisor){
-            if(number % divisor == 0){
-                return false;
-            }
-            divisor++;
-        }
-
-        return true;
-    }
-
     @Override
     public boolean contains(K key) {
 
         int hash = Math.abs(key.hashCode()) % size;
         int position = hash;
         int colisiones = 1;
-
-//        Boolean[] hasBeenChecked = new Boolean[size];
-//        Arrays.fill(hasBeenChecked, false);
-
-
-//        while(table[position] !=null || hasBeenDeleted[position]){
-//            if (!hasBeenDeleted[position]) {
-//                if (table[position].getKey().equals(key)) {
-//                    return true;
-//                }
-//            }
-//
-//            hasBeenChecked[position] = true;
-//            if(!arrayContains(hasBeenChecked,false)){
-//                //Todas las posiciones fueron revisadas y no se encontro el elemento
-//                return false;
-//            }
-//
-//            position = Math.abs((hash + Math.abs(colisiones*colisiones))) % size;
-//            colisiones++;
-//        }
 
         while(table[position] !=null || hasBeenDeleted[position]){
             if (!hasBeenDeleted[position]) {
@@ -142,24 +98,8 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
                 }
             }
 
-//            hasBeenChecked[position] = true;
-//            if(!arrayContains(hasBeenChecked,false)){
-//                //Todas las posiciones fueron revisadas y no se encontro el elemento
-//                return false;
-//            }
-
             position = Math.abs((hash + Math.abs(colisiones*colisiones))) % size;
             colisiones++;
-        }
-
-        return false;
-    }
-
-    private boolean arrayContains(Boolean[] array, boolean value){
-        for (boolean b : array){
-            if(b == value){
-                return true;
-            }
         }
 
         return false;
