@@ -10,25 +10,21 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.*;
 
 public class Main {
 
     static Scanner scanner = new Scanner(System.in);
     static boolean datosCargados = false;
-    static Calendar calendar = new GregorianCalendar();
 
     // cast members
-    static ArrayListImpl<CastMember> peopleList = new ArrayListImpl<>(300000);
     static HashCerrado<String,CastMember> peopleHash = new HashCerrado<>(400000);
     static ArrayListImpl<CauseOfDeath> deathCauses = new ArrayListImpl<>(10000);
 
     // movies
-    static ArrayListImpl<Movie> moviesList = new ArrayListImpl<>(86000);
     static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(115000);
 
     // movie cast members
-    static ArrayListImpl<MovieCastMember> characters = new ArrayListImpl<>(835494);
+    static HashCerrado<String, ArrayListImpl<MovieCastMember>> categoryHash = new HashCerrado<>(15);
 
     public static void main(String[] args){
         while(true){
@@ -148,7 +144,6 @@ public class Main {
             while ((valores = csvReader.readNext()) != null) {
                 Movie movie = new Movie(valores);
                 moviesHash.put(movie.getImbdTitleId(), movie);
-                moviesList.add(movie);
             }
         } catch (IOException | CsvValidationException | ParseException e) {
             //Nunca se deberia llegar aca
@@ -195,6 +190,7 @@ public class Main {
                         }
                     }
                     peopleList.add(cm);
+
                     peopleHash.put(cm.getImdbNameId(),cm);
 
                 } catch (ParseException e) {
@@ -218,6 +214,15 @@ public class Main {
                 valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
                 MovieCastMember movieCM = new MovieCastMember(valores);
                 characters.add(movieCM);
+                ArrayListImpl<MovieCastMember> categoryList;
+                if(categoryHash.contains(movieCM.getCategory())){
+                    categoryList = categoryHash.get(movieCM.getCategory());
+                } else {
+                    categoryList = new ArrayListImpl<>(1000);
+                    categoryHash.put(movieCM.getCategory() ,categoryList);
+                }
+
+                categoryList.add(movieCM);
             }
         }
 
@@ -298,7 +303,7 @@ public class Main {
                     && director.getBirthCountry().contains("ukraine")) {
 
                 if (deathHash.contains(new CauseOcurrence(director.getCauseOfDeath()))) { // si la causa de muerte ya esta registrada
-                 
+
                 }
 
 
@@ -338,8 +343,7 @@ public class Main {
                     "Cantidad de personas:" + deathCauses.get(i).getOcurrence());
         }
 
-        // FALTA RESETEAR OCURRENCIAS
-    }
+        }
 
     public static void cuartaConsulta() {
         ArrayListImpl<MovieCastMember> actor = castMemberHash.get("actor");
@@ -451,7 +455,6 @@ public class Main {
         }
 
     }
-
 
 }
 
