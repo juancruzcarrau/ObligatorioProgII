@@ -5,7 +5,6 @@ import java.util.Objects;
 public class CauseOfDeath implements Comparable<CauseOfDeath> {
 
     private int ocurrencia = 1;
-
     private final String name;
 
     public CauseOfDeath(String name) {

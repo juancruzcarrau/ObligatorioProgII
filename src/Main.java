@@ -1,6 +1,5 @@
 import TADs.arrayList.ArrayListImpl;
 import TADs.hash.HashCerrado;
-import TADs.listaSimpleFC.ListaEnlazada;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
@@ -12,25 +11,22 @@ import java.util.*;
 
 public class Main {
 
-
-
     static Scanner scanner = new Scanner(System.in);
+    static boolean datosCargados = false;
+    static Calendar calendar = new GregorianCalendar();
 
     // cast members
     static ArrayListImpl<CastMember> peopleList = new ArrayListImpl<>(300000);
-    static HashCerrado<String,CastMember> peopleHash = new HashCerrado<>(400000, 1);
+    static HashCerrado<String,CastMember> peopleHash = new HashCerrado<>(400000);
     static ArrayListImpl<CauseOfDeath> deathCauses = new ArrayListImpl<>(10000);
 
     // movies
-    static ListaEnlazada<Movie> movies = new ListaEnlazada<>();
-    static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(115000,1);
+    static ArrayListImpl<Movie> movies = new ArrayListImpl<>(86000);
+    static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(115000);
 
     // movie cast members
-    static ArrayListImpl<MovieCastMember> characters = new ArrayListImpl<>(850000);
+    static ArrayListImpl<MovieCastMember> characters = new ArrayListImpl<>(835494);
     static HashCerrado<String, ArrayListImpl<MovieCastMember>> peopleByCountry = new HashCerrado<>(300, 0.75);
-
-    // otros
-    static Calendar calendar = new GregorianCalendar();
 
     public static void main(String[] args){
         while(true){
@@ -56,10 +52,16 @@ public class Main {
             }
 
             if(seleccion == 1){
-                long startTime = System.currentTimeMillis();
-                cargarDatos();
-                long endTime = System.currentTimeMillis();
-                System.out.println("Carga de datos exitosa, tiempo de ejecución de la carga:" + (endTime - startTime));
+                if (!datosCargados) {
+                    long startTime = System.currentTimeMillis();
+                    cargarDatos();
+                    long endTime = System.currentTimeMillis();
+                    System.out.println("Carga de datos exitosa, tiempo de ejecución de la carga:" + (endTime - startTime));
+
+                    datosCargados = true;
+                } else {
+                    System.out.println("Los datos ya se han cargado.");
+                }
             } else if (seleccion == 2){
                 ejectutarConsultas();
             } else if (seleccion == 3){
@@ -99,9 +101,12 @@ public class Main {
             }
 
             if(seleccionConsulta == 1){
-//                primeraConsulta();
+                long startTime = System.currentTimeMillis();
+                primeraConsulta();
+                long endTime = System.currentTimeMillis();
+                System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
             } else if (seleccionConsulta == 2){
-                segundaConsulta();
+//                segundaConsulta();
             } else if (seleccionConsulta == 3){
 //                terceraConsulta();
             } else if (seleccionConsulta == 4){
@@ -116,16 +121,6 @@ public class Main {
     }
 
     private static void cargarDatos() {
-
-        //Template carga
-        try (CSVReader csvReader = new CSVReader(new FileReader("dataset/IMDb movies.csv"))) {
-            String[] valores = null;
-            while ((valores = csvReader.readNext()) != null) {
-            }
-        } catch (IOException | CsvValidationException e) {
-            //Nunca se deberia llegar aca
-            e.printStackTrace();
-        }
 
         //Carga de peliculas
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
@@ -157,8 +152,6 @@ public class Main {
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
             String[] valores = null;
 
-            //int countttt = 0;
-
             while ((valores = csvReader.readNext()) != null) {
 
                 try {
@@ -171,6 +164,7 @@ public class Main {
                             break;
                         }
                     }
+
                     if (dc != null) {
                         cm.setCauseOfDeath(dc);
                     }
@@ -201,9 +195,7 @@ public class Main {
             BufferedReader objReader;
             objReader = new BufferedReader(new InputStreamReader(new FileInputStream("dataset/IMDb title_principals.csv"), "UTF-8"));
             objReader.readLine(); // SALTEO DEL CABEZAL
-
             while ((strCurrentLine = objReader.readLine()) != null) {
-
                 valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
                 MovieCastMember movieCM = new MovieCastMember(valores);
                 characters.add(movieCM);
@@ -224,10 +216,6 @@ public class Main {
         catch (Exception e) {
             e.printStackTrace();
         }
-
-        //System.out.println("size lista peliculas: "+movies.size() + " y tiene que dar 85855");
-        //System.out.println("size lista castMembers: "+peopleList.size() + " y tiene que dar 297705");
-        //System.out.println("size lista movieCastMembers: "+characters.size() + " y tiene que dar 835493");
     }
 
     private static String getCountryFromMovieCM(MovieCastMember movieCM) {
@@ -239,6 +227,43 @@ public class Main {
         }
 
         return country;
+    }
+
+    private static void primeraConsulta() {
+
+        HashCerrado<String, Apariciones> hashDeActores = new HashCerrado<>(10000);
+        for (int i = 0; i < characters.size(); i++) {
+            MovieCastMember castMember = characters.get(i);
+            if (castMember.getCategory().equals("actor") || castMember.getCategory().equals("actress")){
+                if (!hashDeActores.contains(castMember.getActorID())) {
+                    hashDeActores.put(castMember.getActorID(), new Apariciones(castMember, 1));
+                } else {
+                    Apariciones aparicionesDeCastMember = hashDeActores.get(castMember.getActorID());
+                    aparicionesDeCastMember.agregarAparicion();
+                }
+            }
+        }
+
+        ArrayListImpl<String> aparicionesKeys = hashDeActores.getKeys();
+        ArrayListImpl<Apariciones> aparicionesList = new ArrayListImpl<>(aparicionesKeys.size());
+        for (int i = 0; i < aparicionesKeys.size(); i++) {
+            try {
+                String key = aparicionesKeys.get(i);
+                Apariciones apariciones = hashDeActores.get(key);
+                aparicionesList.add(apariciones);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        aparicionesList.sort();
+
+        for (int i = aparicionesList.size(); i > aparicionesList.size() - 5; i--) {
+            CastMember castMember = peopleHash.get(aparicionesList.get(i-1).getActor().getActorID());
+            System.out.println("Nombre actor/actriz: " + castMember.getName());
+            System.out.println("Cantidad de apariciones: " + aparicionesList.get(i-1).getCantidadDeApariciones());
+        }
+
     }
 
     public static void segundaConsulta() {
@@ -299,7 +324,7 @@ public class Main {
                     if (!maleYears.contains(year)) {
                         maleYears.add(year);
                     } else {
-                        maleYears.get(tempYear).incrementOcurrencias();     // FIXME: NUNCA ENTRA 
+                        maleYears.get(tempYear).incrementOcurrencias();     // FIXME: NUNCA ENTRA
                     }
                 }
 

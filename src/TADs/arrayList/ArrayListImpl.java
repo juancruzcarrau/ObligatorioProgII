@@ -1,7 +1,5 @@
 package TADs.arrayList;
 
-import entities.CauseOfDeath;
-
 import java.util.Arrays;
 
 public class ArrayListImpl<T> implements ArrayList<T>{
@@ -64,7 +62,6 @@ public class ArrayListImpl<T> implements ArrayList<T>{
      * Sorts array by merge Sort
      */
     public void sort(){
-        //Comparable[] filledArray = (Comparable[]) Arrays.copyOfRange(this.array, 0, last);
         Comparable<T>[] filledArray = new Comparable[last];
         for (int i = 0; i < last; i++) {
             filledArray[i] = (Comparable<T>) array[i];
