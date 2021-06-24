@@ -230,41 +230,32 @@ public class Main {
 
     private static void primeraConsulta() {
 
-        HashCerrado<String, Apariciones> hashDeActoresYActrices = new HashCerrado<>(300000);
-        ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");
-        ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");
-        ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices);
+        HashCerrado<String, Ocurrencias<MovieCastMember>> hashDeActoresYActrices = new HashCerrado<>(300000);    //ArrayList que contentra las apariciones de los actores
+        ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");        //ArrayList de castmembers que son actores
+        ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");   //ArrayList de castmembers que son actrices
+        ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices); //Concatencacion de las dos ArrayList anteriores
 
-        for (int i = 0; i < listaDeActoresYActrices.size(); i++) {
+        for (int i = 0; i < listaDeActoresYActrices.size(); i++) {  //Se itera en la lista
             MovieCastMember castMember = listaDeActoresYActrices.get(i);
             if (!hashDeActoresYActrices.contains(castMember.getActorID())) {
-                hashDeActoresYActrices.put(castMember.getActorID(), new Apariciones(castMember, 1));
+                //Si es la primera vez que aparece, se crea una nueva instancia de Ocurrencias
+                hashDeActoresYActrices.put(castMember.getActorID(), new Ocurrencias<>(castMember, 1));
             } else {
-                Apariciones aparicionesDeCastMember = hashDeActoresYActrices.get(castMember.getActorID());
-                aparicionesDeCastMember.agregarAparicion();
+                //Si ya aparecio antes, se le incrementa las ocurrencias
+                Ocurrencias<MovieCastMember> aparicionesDeCastMember = hashDeActoresYActrices.get(castMember.getActorID());
+                aparicionesDeCastMember.incrementarOcurrencias();
             }
         }
 
-        ArrayListImpl<String> aparicionesKeys = hashDeActoresYActrices.getKeys();
-        ArrayListImpl<Apariciones> aparicionesList = new ArrayListImpl<>(aparicionesKeys.size());
-        for (int i = 0; i < aparicionesKeys.size(); i++) {
-            try {
-                String key = aparicionesKeys.get(i);
-                Apariciones apariciones = hashDeActoresYActrices.get(key);
-                aparicionesList.add(apariciones);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        ArrayListImpl<Ocurrencias<MovieCastMember>> aparicionesList = hashDeActoresYActrices.getValues();   //Se obtiene una ArrayList con todas las apariciones
+        aparicionesList.sort(); //y se la ordena en orden ascendente
 
-        aparicionesList.sort();
-
-        for (int i = aparicionesList.size(); i > aparicionesList.size() - 5; i--) {
-            CastMember castMember = peopleHash.get(aparicionesList.get(i-1).getActor().getActorID());
+        for (int i = aparicionesList.size() - 1; i > aparicionesList.size() - 6; i--) {
+            //Se itera en los ultimos  valores de la ArrayList ordenada y se imprime la informacion
+            CastMember castMember = peopleHash.get(aparicionesList.get(i).getObject().getActorID());
             System.out.println("Nombre actor/actriz: " + castMember.getName());
-            System.out.println("Cantidad de apariciones: " + aparicionesList.get(i-1).getCantidadDeApariciones());
+            System.out.println("Cantidad de apariciones: " + aparicionesList.get(i).getOcurrences());
         }
-
     }
 
     public static void segundaConsulta() {
@@ -321,60 +312,62 @@ public class Main {
     }
 
     private static void terceraConsulta() {
-        ArrayListImpl<Movie> moviesList = moviesHash.getValues();
+        ArrayListImpl<Movie> moviesList = moviesHash.getValues();   //Se obtiene una ArrayList de todas las peliculas
         ArrayListImpl<Movie> moviesInYears = new ArrayListImpl<>(5000); //Numero inicial arbitrario
 
-        int fechaInicio = 1950; //Corresponde al inicio de 1950
-        int fechaFin = 1960; //Corresponde al fin de 1960
+        int fechaInicio = 1950;
+        int fechaFin = 1960;
 
-        for (int i = 0; i < moviesList.size(); i++) {
+        for (int i = 0; i < moviesList.size(); i++) { //Se itera en las peliculas
             Movie movie = moviesList.get(i);
             if(movie.getYear() >= fechaInicio && movie.getYear() <= fechaFin){
-                moviesInYears.add(movie);
+                moviesInYears.add(movie);   //Si la pelicula esta entre 1950 y 1960 se la agrega a la lista
             }
         }
 
-        moviesInYears.sort();
-        ArrayListImpl<String> moviesIdList = new ArrayListImpl<>(14);
-        HashCerrado<String, ArrayListImpl<String>> actorsInMovies = new HashCerrado<>(19);
+        moviesInYears.sort();   //Se ordena la lista en orden ascendente
+        ArrayListImpl<String> moviesIdList = new ArrayListImpl<>(14);   //Se crea una ArrayLis que guardara las 14 peliculas con mayor weightedAverage
+        HashCerrado<String, ArrayListImpl<String>> actorsInMovies = new HashCerrado<>(19);  //Hash que tendra ArrayLists para cada pelicula, en la que cada arraylist
+                                                                                                // tiene los actores de cada pelicula. Se inicializa en 1 para que no haya ue hacer un rehash
 
         for (int i = moviesInYears.size() - 1; i > moviesInYears.size()-15; i--) {
-            moviesIdList.add(moviesInYears.get(i).getImbdTitleId());
-            actorsInMovies.put(moviesInYears.get(i).getImbdTitleId(), new ArrayListImpl<>(5));
+            moviesIdList.add(moviesInYears.get(i).getImbdTitleId());    //Se guarda el ImbdTitleId en la lista
+            actorsInMovies.put(moviesInYears.get(i).getImbdTitleId(), new ArrayListImpl<>(5));  //Se crea y guarda en el hash el arraylist para cada pelicula, mencionado previamente.
         }
 
-        ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");
-        ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");
-        ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices);
+        ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");        //ArrayList de castmembers que son actores
+        ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");   //ArrayList de castmembers que son actrices
+        ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices); //Concatencacion de las dos ArrayList anteriores
 
         for (int i = 0; i < listaDeActoresYActrices.size(); i++) {
-            if(moviesIdList.contains(listaDeActoresYActrices.get(i).getMovieID())){
-                actorsInMovies.get(listaDeActoresYActrices.get(i).getMovieID()).add(listaDeActoresYActrices.get(i).getActorID());
+            //Se itera entre todos los actores y actrices
+            if(moviesIdList.contains(listaDeActoresYActrices.get(i).getMovieID())){ //Si el titulo de la pelicula en que tuvo el rol conincide con una de las 14
+                actorsInMovies.get(listaDeActoresYActrices.get(i).getMovieID()).add(listaDeActoresYActrices.get(i).getActorID());   //Entonces se la agrega a la arraylist correspondiente
             }
         }
 
-        for (int i = moviesInYears.size() - 1; i > moviesInYears.size()-15; i--) {
-            ArrayListImpl<String> actoresId = actorsInMovies.get(moviesInYears.get(i).getImbdTitleId());
-            ArrayListImpl<CastMember> actores = new ArrayListImpl<>(actoresId.size());
+        for (int i = moviesInYears.size() - 1; i > moviesInYears.size()-15; i--) {  //Se itera en las ultimas 14 peliculas
+            ArrayListImpl<String> actoresId = actorsInMovies.get(moviesInYears.get(i).getImbdTitleId());    //Se obtiene la lista de id de actores que estaba guardada en el hash
+            ArrayListImpl<CastMember> actores = new ArrayListImpl<>(actoresId.size());  //Se crea una lista que contendra las entidades de actores de la pelicula
 
             for (int j = 0; j < actoresId.size(); j++) {
-                actores.add(peopleHash.get(actoresId.get(j)));
+                actores.add(peopleHash.get(actoresId.get(j)));  //Se agregan las entidades de actores a la lista
             }
 
-            int heightSum = 0;
-            int amountOfActors = 0;
+            int heightSum = 0;      //Suma de alturas inicializado en cero
+            int amountOfActors = 0; //Cantidad de actores que tienen alturas distintas de cero inicializado en cero
 
             for (int j = 0; j < actores.size(); j++) {
-                if(actores.get(j).getHeight() != 0){
-                    heightSum += actores.get(j).getHeight();
-                    amountOfActors++;
+                if(actores.get(j).getHeight() != 0){    //Si el actor tiene una altura distinta de cero
+                    heightSum += actores.get(j).getHeight();       //Se agrega su altura para el promedio
+                    amountOfActors++;                              //Se lo cuenta para el promedio
                 }
             }
 
-            if (amountOfActors != 0){
+            if (amountOfActors != 0){       //Si tiene al menos un actor que tiene una altura distinta de cero, se imprime sus datos
                 System.out.println("Id película: " + moviesInYears.get(i).getImbdTitleId());
                 System.out.println("Nombre: " + moviesInYears.get(i).getTitle());
-                System.out.println("Altura promedio de actores: " + heightSum/(double) amountOfActors + '\n');
+                System.out.println("Altura promedio de actores: " + heightSum/(double) amountOfActors); //Se hace el promedio haciendo la suma de altura de actores divido la cantidad de actores cuyas alturas eran distintas de 0
             }
 
         }
@@ -461,43 +454,42 @@ public class Main {
     }
 
     private static void quintaConsulta(){
-        ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");
-        ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");
-        ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices);
+        ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");        //ArrayList de castmembers que son actores
+        ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");   //ArrayList de castmembers que son actrices
+        ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices); //Concatencacion de las dos ArrayList anteriores
 
-        ArrayListImpl<Movie> moviesAlreadyAccounted = new ArrayListImpl<>(50000);
-        HashCerrado<String, Ocurrencias<String>> hashGeneros = new HashCerrado<>(15);
+        ArrayListImpl<Movie> moviesAlreadyAccounted = new ArrayListImpl<>(50000);   //Arraylist que contiene las peliculas que cumplen la condiccion. La idea es que aca no hayan peliculas repetidas.
+        HashCerrado<String, Ocurrencias<String>> hashGeneros = new HashCerrado<>(15);   //Un hash con los generos como key y sus ocurrencias
 
-        for (int i = 0; i < listaDeActoresYActrices.size(); i++) {
+        for (int i = 0; i < listaDeActoresYActrices.size(); i++) { //Se itera en los actores
             MovieCastMember movieCM = listaDeActoresYActrices.get(i);
 
-            if(peopleHash.get(movieCM.getActorID()).getChildren() >= 2){
-                Movie movie = moviesHash.get(movieCM.getMovieID());
+            if(peopleHash.get(movieCM.getActorID()).getChildren() >= 2){       //En caso de que tengan dos o mas hijos, se procede a agregar la peliucula
+                Movie movie = moviesHash.get(movieCM.getMovieID());            // Se obtiene la pelicula desde el hash
 
-                if(!moviesAlreadyAccounted.contains(movie)){
-                    moviesAlreadyAccounted.add(movie);
+                if(!moviesAlreadyAccounted.contains(movie)){    //Si es la primera vez que aparece esta pelicula, se procede a agregarla
+                    moviesAlreadyAccounted.add(movie);          //Se la agrega
 
-                    for (int j = 0; j < movie.getGenre().size(); j++) {
+                    for (int j = 0; j < movie.getGenre().size(); j++) {     //Se itera en los generos de la pelicula
                         Ocurrencias<String> ocurrenciasGenero;
-                        if(hashGeneros.contains(movie.getGenre().get(j))){
-                            ocurrenciasGenero = hashGeneros.get(movie.getGenre().get(j));
+                        if(hashGeneros.contains(movie.getGenre().get(j))){  //Si este genero ya existe en el hash de generos
+                            ocurrenciasGenero = hashGeneros.get(movie.getGenre().get(j));   //Se pide la instancia que cuenta sus ocurrencias
+                            ocurrenciasGenero.incrementarOcurrencias();     //Y se la incrementa
                         } else {
-                            ocurrenciasGenero = new Ocurrencias<>(movie.getGenre().get(j), 0);
-                            hashGeneros.put(movie.getGenre().get(j), ocurrenciasGenero);
+                            ocurrenciasGenero = new Ocurrencias<>(movie.getGenre().get(j), 1);  //En caso de que no exista se la crea, inicializado en 1
+                            hashGeneros.put(movie.getGenre().get(j), ocurrenciasGenero);                 //Y esta instancia es agregada al hash de generos con el genero como key
                         }
-
-                        ocurrenciasGenero.incrementarOcurrencias();
                     }
                 }
             }
         }
 
-        ArrayListImpl<Ocurrencias<String>> listaOcurrencias = hashGeneros.getValues();
-        listaOcurrencias.sort();
+        ArrayListImpl<Ocurrencias<String>> listaOcurrencias = hashGeneros.getValues();  //Se obtiene una ArrayList de todas las ocurrencias de los generos
+        listaOcurrencias.sort();    //Y se los ordena en orden ascendente
 
-        for (int i = listaOcurrencias.size() - 1; i > listaOcurrencias.size() - 11; i--) {
+        for (int i = listaOcurrencias.size() - 1; i > listaOcurrencias.size() - 11; i--) {  //Se itera en los ultimos 10 y se imprimen los ultimos 10
             System.out.println("Genero pelicula:" + listaOcurrencias.get(i).getObject());
-            System.out.println("Cantidad:" + listaOcurrencias.get(i).getOcurrences() + '\n');
+            System.out.println("Cantidad:" + listaOcurrencias.get(i).getOcurrences());
         }
     }
 
