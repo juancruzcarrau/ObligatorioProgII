@@ -1,10 +1,6 @@
 package entities;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import static java.lang.Integer.parseInt;
 
 public class CastMember {
@@ -15,14 +11,10 @@ public class CastMember {
     private final int height;
     private final String bio;
     private final int birthDate;
-    private final String birthState;
     private final String birthCountry;
-    private final String birthCity;
     private CauseOfDeath causeOfDeath;
-    private final Date deathDate;
-    private final String deathState;
+    private final int deathDate;
     private final String deathCountry;
-    private final String deathCity;
     private final String spousesString;
     private final int spouses;
     private final int divorces;
@@ -36,16 +28,10 @@ public class CastMember {
         this.height = !metadata[3].isEmpty() ? parseInt(metadata[3]) : 0;
         this.bio = metadata[4];
         this.birthDate = yearParser(metadata[6]);
-        String[] birth = placeSeparator(metadata[7]);
-        this.birthState = birth[1];
         this.birthCountry = !metadata[7].isEmpty() ? metadata[7] : null;
-        this.birthCity = birth[0];
         this.causeOfDeath = null;
-        this.deathDate = dateParser(metadata[9]);
-        String[] death = placeSeparator(metadata[10]);
-        this.deathState = death[1];
-        this.deathCountry = death[2];
-        this.deathCity = death[0];
+        this.deathDate = yearParser(metadata[9]);
+        this.deathCountry = metadata[10];
         this.spousesString = metadata[12];
         this.spouses = !metadata[13].isEmpty() ? parseInt(metadata[13]) : 0;
         this.divorces = !metadata[14].isEmpty() ? parseInt(metadata[14]) : 0;
@@ -77,36 +63,24 @@ public class CastMember {
         return birthDate;
     }
 
-    public String getBirthState() {
-        return birthState;
-    }
-
     public String getBirthCountry() {
         return birthCountry;
-    }
-
-    public String getBirthCity() {
-        return birthCity;
     }
 
     public CauseOfDeath getCauseOfDeath() {
         return causeOfDeath;
     }
 
-    public Date getDeathDate() {
-        return deathDate;
+    public void setCauseOfDeath(CauseOfDeath causeOfDeath) {
+        this.causeOfDeath = causeOfDeath;
     }
 
-    public String getDeathState() {
-        return deathState;
+    public int getDeathDate() {
+        return deathDate;
     }
 
     public String getDeathCountry() {
         return deathCountry;
-    }
-
-    public String getDeathCity() {
-        return deathCity;
     }
 
     public String getSpousesString() {
@@ -129,7 +103,7 @@ public class CastMember {
         return children;
     }
 
-    private String[] placeSeparator(String data) {
+/*    private String[] placeSeparator(String data) {
         String[] info = new String[4];
         String[] strArray = data.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 
@@ -166,9 +140,9 @@ public class CastMember {
         }
 
         return info;
-    }
+    }*/
 
-    private Date dateParser(String str) {
+/*    private Date dateParser(String str) {
         Date date = null;
         String test = null;
 
@@ -202,29 +176,21 @@ public class CastMember {
         }
 
         return date;
-    }
+    }*/
 
     private int yearParser(String str) {
         int ano = -1;
         String temp;
         if (str != null) {
             if (!str.equals("")) {
-
                 temp = str.replaceAll("[^0-9]", "");
-
                 if (!temp.equals("")) {
                     temp = temp.substring(0, Math.min(temp.length(), 4));
                     ano = parseInt(temp);
                 }
-
             }
         }
-
         return ano;
-    }
-
-    public void setCauseOfDeath(CauseOfDeath causeOfDeath) {
-        this.causeOfDeath = causeOfDeath;
     }
 
 }
