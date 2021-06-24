@@ -183,7 +183,7 @@ public class Main {
                     }
 
                     else { // si no esta registrada la causa de muerte:
-                        if (!valores[11].equals("") && !valores[11].equals("undisclosed")) { // no considero causas "" y "undisclosed"
+                        if (!valores[11].equals("")) { // no considero causas "" y "undisclosed"
                             dc = new CauseOfDeath(valores[11]); // creo instanncia
                             deathCauses.put(valores[11],dc); // la agrego al registro de causas de muerte
                             cm.setCauseOfDeath(dc); // se la seteo al CastMember
