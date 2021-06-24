@@ -297,20 +297,10 @@ public class Main {
                     }
                 }
             }
-
-            else {
-                continue; // si la persona ya fue considerada, paso a la siguiente iteracion
-            }
         }
 
         ArrayListImpl<CauseOcurrence> causesWithOcurrence = deathHash.getValues(); // obtengo las causas de muertes con sus respectivas ocurrencias
-
-        try {
-            causesWithOcurrence.sort(); // ordeno por mergesort, comparando por cantidad de ocurrencias
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        causesWithOcurrence.sort(); // ordeno por mergesort, comparando por cantidad de ocurrencias
 
         for (int i = causesWithOcurrence.size() - 1; i > causesWithOcurrence.size() - 6; i--) { // devuelvo top 5
             System.out.println("Causa de muerte:" + causesWithOcurrence.get(i).getCause().getName() + "\n" +
@@ -409,9 +399,6 @@ public class Main {
                 }
                 alreadyConsideredPeople.put(actor.getImdbNameId(), actor); // por no estar considerada de antes, la agrego al hash de considerados
             }
-            else {
-                continue; // si la persona ya fue considerada, paso a la siguiente iteracion
-            }
         }
 
         ArrayListImpl<Year> menY = maleYearsHash.getValues(); // obtengo anos con sus ocurrencias
@@ -435,9 +422,6 @@ public class Main {
                     }
                 }
                 alreadyConsideredPeople.put(actress.getImdbNameId(), actress); // por no estar considerada de antes, la agrego al hash de considerados
-            }
-            else {
-                continue; // si la persona ya fue considerada, paso a la siguiente iteracion
             }
         }
 
