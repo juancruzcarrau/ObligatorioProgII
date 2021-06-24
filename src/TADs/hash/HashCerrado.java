@@ -62,7 +62,10 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
         Arrays.fill(newHasBeenDeleted, false);
 
         //Implementacion cuadratica
-        for (NodoHashCerrado<K, T> nodo : table) {
+        for (int i = 0; i < table.length; i++) {
+
+            NodoHashCerrado<K, T> nodo = table[i];
+
             if(nodo == null){
                 continue;
             }
@@ -77,6 +80,7 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
             }
 
             newTable[position] = nodo;
+            newHasBeenDeleted[position] = hasBeenDeleted[i];
         }
 
         size = newSize;
