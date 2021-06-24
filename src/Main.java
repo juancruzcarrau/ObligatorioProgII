@@ -19,7 +19,7 @@ public class Main {
 
     // cast members
     static HashCerrado<String,CastMember> peopleHash = new HashCerrado<>(400000);
-    static ArrayListImpl<CauseOfDeath> deathCauses = new ArrayListImpl<>(10000);
+    static HashCerrado<String,CauseOfDeath> deathCauses = new HashCerrado<>(10000);
 
     // movies
     static HashCerrado<String, Movie> moviesHash = new HashCerrado<>(115000);
@@ -178,20 +178,14 @@ public class Main {
                     CastMember cm = new CastMember(valores); // creo intancia
                     CauseOfDeath dc = null; // declaro variable
 
-                    for (int i = 0; i < deathCauses.size(); i++) { // itero entre todas las causas de muertes
-                        if (deathCauses.get(i).getName().equals(valores[11])) { // si ya esta registrada
-                            dc = deathCauses.get(i); // puntero a la causa de muerte ya registrada
-                            break;
-                        }
+                    if (deathCauses.contains(valores[11])) { // si ya esta registrada
+                        cm.setCauseOfDeath(deathCauses.get(valores[11])); // puntero a la causa de muerte ya registrada
                     }
 
-                    if (dc != null) {
-                        cm.setCauseOfDeath(dc);  // le seteo la susodicha al nuevo CastMember
-                    }
                     else { // si no esta registrada la causa de muerte:
                         if (!valores[11].equals("") && !valores[11].equals("undisclosed")) { // no considero causas "" y "undisclosed"
                             dc = new CauseOfDeath(valores[11]); // creo instanncia
-                            deathCauses.add(dc); // la agrego al registro de causas de muerte
+                            deathCauses.put(valores[11],dc); // la agrego al registro de causas de muerte
                             cm.setCauseOfDeath(dc); // se la seteo al CastMember
                         }
                     }
