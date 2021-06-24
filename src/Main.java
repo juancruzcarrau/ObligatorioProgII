@@ -228,17 +228,6 @@ public class Main {
         }
     }
 
-    private static String getCountryFromMovieCM(MovieCastMember movieCM) {
-        String country = null;
-        String key = movieCM.getActorID();
-
-        if (peopleHash.contains(key)) {
-            country  = peopleHash.get(key).getBirthCountry();
-        }
-
-        return country;
-    }
-
     private static void primeraConsulta() {
 
         HashCerrado<String, Apariciones> hashDeActoresYActrices = new HashCerrado<>(300000);
