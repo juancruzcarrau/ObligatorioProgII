@@ -35,7 +35,7 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
             throw new RuntimeException();
         }
 
-        //Implementacion lineal
+        //Implementacion cuadratica
         int hash = Math.abs(key.hashCode()) % size;
         int position = hash;
         int colisiones = 1;
@@ -55,13 +55,13 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
     }
 
     private void restructureHash() {
-//        int newSize = getNextPrime(size);
+
         int newSize = (int) (size*1.5);
         NodoHashCerrado<K, T>[] newTable = new NodoHashCerrado[newSize];
         Boolean[] newHasBeenDeleted = new Boolean[newSize];
         Arrays.fill(newHasBeenDeleted, false);
 
-        //Implementacion lineal
+        //Implementacion cuadratica
         for (NodoHashCerrado<K, T> nodo : table) {
             if(nodo == null){
                 continue;
@@ -91,7 +91,7 @@ public class HashCerrado<K, T> implements HashTable<K, T>{
         int position = hash;
         int colisiones = 1;
 
-        while(table[position] !=null || hasBeenDeleted[position]){
+        while(table[position] != null || hasBeenDeleted[position]){
             if (!hasBeenDeleted[position]) {
                 if (table[position].getKey().equals(key)) {
                     return true;
