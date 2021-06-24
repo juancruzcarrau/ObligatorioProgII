@@ -237,7 +237,7 @@ public class Main {
 
     private static void primeraConsulta() {
 
-        HashCerrado<String, Ocurrencias<MovieCastMember>> hashDeActoresYActrices = new HashCerrado<>(300000);    //ArrayList que contentra las apariciones de los actores
+        HashCerrado<String, Ocurrencias<MovieCastMember>> hashDeActoresYActrices = new HashCerrado<>(300000);    //HashCerrado que contentra las apariciones de los actores
         ArrayListImpl<MovieCastMember> listaActores = categoryHash.get("actor");        //ArrayList de castmembers que son actores
         ArrayListImpl<MovieCastMember> listaDeActrices = categoryHash.get("actress");   //ArrayList de castmembers que son actrices
         ArrayListImpl<MovieCastMember> listaDeActoresYActrices = listaActores.concatenate(listaDeActrices); //Concatencacion de las dos ArrayList anteriores
