@@ -7,7 +7,7 @@ public class CauseOcurrence implements Comparable<CauseOcurrence> {
 
     public CauseOcurrence(CauseOfDeath cause) {
         this.cause = cause;
-        this.ocurrence = 0;
+        this.ocurrence = 1;
     }
 
     public CauseOfDeath getCause() {
