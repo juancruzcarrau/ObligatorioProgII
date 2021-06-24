@@ -279,6 +279,7 @@ public class Main {
     }
 
     public static void segundaConsulta() {
+        HashCerrado<String,CastMember> alreadyConsideredPeople = new HashCerrado<>(300000);
         HashCerrado<CauseOfDeath, CauseOcurrence> deathHash = new HashCerrado<>(5000);
         ArrayListImpl<MovieCastMember> directors = categoryHash.get("director");
         ArrayListImpl<MovieCastMember> producers = categoryHash.get("producer");
@@ -288,22 +289,29 @@ public class Main {
 
             CastMember person = peopleHash.get(dirprod.get(i).getActorID());
 
-            if (person.getBirthCountry() != null) {
-                if (!person.getBirthCountry().equals("") && person.getCauseOfDeath() != null) {
+            if (!alreadyConsideredPeople.contains(person.getImdbNameId())) {
+                if (person.getBirthCountry() != null) {
+                    if (!person.getBirthCountry().equals("") && person.getCauseOfDeath() != null) {
 
-                    if (person.getBirthCountry().contains("USA") || person.getBirthCountry().contains("UK") ||
-                            person.getBirthCountry().contains("Italy") || person.getBirthCountry().contains("France")) {
+                        if (person.getBirthCountry().contains("USA") || person.getBirthCountry().contains("UK") ||
+                                person.getBirthCountry().contains("Italy") || person.getBirthCountry().contains("France")) {
 
-                        if (deathHash.contains(person.getCauseOfDeath())) { // si la causa de muerte ya esta registrada
-                            CauseOcurrence ocurrence = deathHash.get(person.getCauseOfDeath());
-                            ocurrence.incrementOcurrence();
-                        } else { // si no esta registrada, la creo
-                            CauseOcurrence ocurrence = new CauseOcurrence(person.getCauseOfDeath());
-                            deathHash.put(person.getCauseOfDeath(), ocurrence);
+                            if (deathHash.contains(person.getCauseOfDeath())) { // si la causa de muerte ya esta registrada
+                                CauseOcurrence ocurrence = deathHash.get(person.getCauseOfDeath());
+                                ocurrence.incrementOcurrence();
+                            } else { // si no esta registrada, la creo
+                                CauseOcurrence ocurrence = new CauseOcurrence(person.getCauseOfDeath());
+                                deathHash.put(person.getCauseOfDeath(), ocurrence);
+                            }
+
+                            alreadyConsideredPeople.put(person.getImdbNameId(),person);
                         }
-
                     }
                 }
+            }
+
+            else {
+                continue;
             }
         }
 
@@ -391,25 +399,33 @@ public class Main {
         ArrayListImpl<Year> femaleYears = new ArrayListImpl<>(500);
         HashCerrado<Integer, Year> maleYearsHash = new HashCerrado<>(500);
         HashCerrado<Integer, Year> femaleYearsHash = new HashCerrado<>(500);
+        HashCerrado<String,CastMember> alreadyConsideredPeople = new HashCerrado<>(300000);
+
 
         for (int i = 0; i < actors.size(); i++) {
 
-           CastMember actor = peopleHash.get(actors.get(i).getActorID());
+            CastMember actor = peopleHash.get(actors.get(i).getActorID());
 
-           if (actor.getBirthDate() != -1) {
-               //calendar.setTime(actor.getBirthDate());
-               //int tempYear = calendar.get(Calendar.YEAR);
-               int tempYear = actor.getBirthDate();
+            if (!alreadyConsideredPeople.contains(actor.getImdbNameId())) {
+                if (actor.getBirthDate() != -1) {
+                    //calendar.setTime(actor.getBirthDate());
+                    //int tempYear = calendar.get(Calendar.YEAR);
+                    int tempYear = actor.getBirthDate();
 
-               if (maleYearsHash.contains(tempYear)) {
-                   Year yearWithOc = maleYearsHash.get(tempYear);
-                   yearWithOc.incrementOcurrencias();
-               } else {
-                   Year yearWithOc = new Year(tempYear);
-                   maleYearsHash.put(tempYear, yearWithOc);
-               }
+                    if (maleYearsHash.contains(tempYear)) {
+                        Year yearWithOc = maleYearsHash.get(tempYear);
+                        yearWithOc.incrementOcurrencias();
+                    } else {
+                        Year yearWithOc = new Year(tempYear);
+                        maleYearsHash.put(tempYear, yearWithOc);
+                    }
 
-           }
+                }
+                alreadyConsideredPeople.put(actor.getImdbNameId(), actor);
+            }
+            else {
+                continue;
+            }
         }
 
         ArrayListImpl<Year> menY = maleYearsHash.getValues();
@@ -419,19 +435,24 @@ public class Main {
 
             CastMember actress = peopleHash.get(actresses.get(i).getActorID());
 
-            if (actress.getBirthDate() != -1) {
-                //calendar.setTime(actress.getBirthDate());
-                //int tempYear = calendar.get(Calendar.YEAR);
-                int tempYear = actress.getBirthDate();
+            if (!alreadyConsideredPeople.contains(actress.getImdbNameId())) {
+                if (actress.getBirthDate() != -1) {
+                    //calendar.setTime(actress.getBirthDate());
+                    //int tempYear = calendar.get(Calendar.YEAR);
+                    int tempYear = actress.getBirthDate();
 
-                if (femaleYearsHash.contains(tempYear)) {
-                    Year yearWithOc = femaleYearsHash.get(tempYear);
-                    yearWithOc.incrementOcurrencias();
-                } else {
-                    Year yearWithOc = new Year(tempYear);
-                    femaleYearsHash.put(tempYear, yearWithOc);
+                    if (femaleYearsHash.contains(tempYear)) {
+                        Year yearWithOc = femaleYearsHash.get(tempYear);
+                        yearWithOc.incrementOcurrencias();
+                    } else {
+                        Year yearWithOc = new Year(tempYear);
+                        femaleYearsHash.put(tempYear, yearWithOc);
+                    }
                 }
-
+                alreadyConsideredPeople.put(actress.getImdbNameId(), actress);
+            }
+            else {
+                continue;
             }
         }
 
