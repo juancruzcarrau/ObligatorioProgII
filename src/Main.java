@@ -6,12 +6,14 @@ import com.opencsv.exceptions.CsvValidationException;
 import entities.*;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.*;
 
 public class Main {
 
+    // declaracion de variables estaticas a utilizar durante la carga de datos y consultas:
+
+    // generales
     static Scanner scanner = new Scanner(System.in);
     static boolean datosCargados = false;
 
@@ -27,6 +29,8 @@ public class Main {
     static Calendar calendar = new GregorianCalendar();
 
     public static void main(String[] args){
+
+        // menu principal
         while(true){
             System.out.println("Seleccione la opción que desee:");
             System.out.println("\t1. Carga de datos");
@@ -36,6 +40,7 @@ public class Main {
 
             int seleccion;
 
+            // se verifica que los datos ingresados sean validos
             try{
                 seleccion = scanner.nextInt();
             } catch (InputMismatchException e){
@@ -49,7 +54,7 @@ public class Main {
                 continue;
             }
 
-            if(seleccion == 1){
+            if(seleccion == 1){ // si se elige opcion 1, se cargan datos. calculando tiempo de duracion del proceso
                 if (!datosCargados) {
                     long startTime = System.currentTimeMillis();
                     cargarDatos();
@@ -60,9 +65,9 @@ public class Main {
                 } else {
                     System.out.println("Los datos ya se han cargado.");
                 }
-            } else if (seleccion == 2){
+            } else if (seleccion == 2){ // si se elige opcion 2, se va al menu de consultas
                 ejectutarConsultas();
-            } else if (seleccion == 3){
+            } else if (seleccion == 3){ // si se elige opcion 3, se finaliza el programa
                 break;
             } else {
                 throw new RuntimeException("Ha ocurrido un error. Seleccion no puede ser un nro distinto de 1, 2 o 3.");
@@ -71,7 +76,7 @@ public class Main {
     }
 
     private static void ejectutarConsultas() {
-
+        // menu de consultas
         while (true) {
             System.out.println("Seleccione la opción que desee:");
             System.out.println("\t1. Indicar el Top 5 de actores/actrices que más apariciones han tenido a lo largo de los años.");
@@ -81,6 +86,7 @@ public class Main {
             System.out.println("\t5. Indicar el Top 10 de géneros de películas más populares, en las cuales al menos un actor/actriz tiene 2 o más hijos.");
             System.out.println("\t6. Salir.");
 
+            // se verifica que los datos ingresados sean validos
             System.out.print("Seleccion: ");
 
             int seleccionConsulta;
@@ -98,6 +104,7 @@ public class Main {
                 continue;
             }
 
+            // previo a la ejecucion, toma el tiempo, y luego de terminar calcula el tiempo que llevo la consulta
             if(seleccionConsulta == 1){
                 long startTime = System.currentTimeMillis();
                 primeraConsulta();
@@ -127,7 +134,7 @@ public class Main {
                 long endTime = System.currentTimeMillis();
                 System.out.println("Tiempo de ejecucion de la consulta:" + (endTime - startTime));
 
-            } else if (seleccionConsulta == 6){
+            } else if (seleccionConsulta == 6){ // si no se elige ninguna consulta, se vuelve al menu principal
                 break;
             }
         }
@@ -137,12 +144,12 @@ public class Main {
     private static void cargarDatos() {
 
         //Carga de peliculas
-        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {
-            String[] valores;
+        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb movies.csv")).withSkipLines(1).build()) {  // creo instancia de CSV Reader que lee el archivo en cuestion
+            String[] valores; // array temporal que almacenara una linea leida y procesada por el CSV Reader
 
-            while ((valores = csvReader.readNext()) != null) {
-                Movie movie = new Movie(valores);
-                moviesHash.put(movie.getImbdTitleId(), movie);
+            while ((valores = csvReader.readNext()) != null) {  // mientras siga habiendo lineas en el archivo
+                Movie movie = new Movie(valores); // creo instancia
+                moviesHash.put(movie.getImbdTitleId(), movie); // agrego al hash de movies
             }
         } catch (IOException | CsvValidationException | ParseException e) {
             //Nunca se deberia llegar aca
@@ -150,11 +157,11 @@ public class Main {
         }
 
         //Carga de ratings a las peliculas
-        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb ratings.csv")).withSkipLines(1).build()) {
-            String[] valores;
-            while ((valores = csvReader.readNext()) != null) {
-                MovieRating rating = new MovieRating(valores);
-                moviesHash.get(valores[0]).setMovieRating(rating);
+        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb ratings.csv")).withSkipLines(1).build()) {  // creo instancia de CSV Reader que lee el archivo en cuestion
+            String[] valores; // array temporal que almacenara una linea leida y procesada por el CSV Reader
+            while ((valores = csvReader.readNext()) != null) { // mientras siga habiendo lineas en el archivo
+                MovieRating rating = new MovieRating(valores); // creo instancia
+                moviesHash.get(valores[0]).setMovieRating(rating); // set de MovieRating a su correspondiente movie
             }
         } catch (IOException | CsvValidationException e) {
             //Nunca se deberia llegar aca
@@ -162,34 +169,34 @@ public class Main {
         }
 
         //Carga de castMembers y causas de muerte
-        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {
-            String[] valores = null;
+        try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {  // creo instancia de CSV Reader que lee el archivo en cuestion
+            String[] valores = null; // array temporal que almacenara una linea leida y procesada por el CSV Reader
 
-            while ((valores = csvReader.readNext()) != null) {
+            while ((valores = csvReader.readNext()) != null) { // mientras siga habiendo lineas en el archivo
 
                 try {
-                    CastMember cm = new CastMember(valores);
-                    CauseOfDeath dc = null;
+                    CastMember cm = new CastMember(valores); // creo intancia
+                    CauseOfDeath dc = null; // declaro variable
 
-                    for (int i = 0; i < deathCauses.size(); i++) {
-                        if (deathCauses.get(i).getName().equals(valores[11])) {
-                            dc = deathCauses.get(i);
+                    for (int i = 0; i < deathCauses.size(); i++) { // itero entre todas las causas de muertes
+                        if (deathCauses.get(i).getName().equals(valores[11])) { // si ya esta registrada
+                            dc = deathCauses.get(i); // puntero a la causa de muerte ya registrada
                             break;
                         }
                     }
 
                     if (dc != null) {
-                        cm.setCauseOfDeath(dc);
+                        cm.setCauseOfDeath(dc);  // le seteo la susodicha al nuevo CastMember
                     }
-                    else {
-                        if (!valores[11].equals("") && !valores[11].equals("undisclosed")) {
-                            dc = new CauseOfDeath(valores[11]);
-                            deathCauses.add(dc);
-                            cm.setCauseOfDeath(dc);
+                    else { // si no esta registrada la causa de muerte:
+                        if (!valores[11].equals("") && !valores[11].equals("undisclosed")) { // no considero causas "" y "undisclosed"
+                            dc = new CauseOfDeath(valores[11]); // creo instanncia
+                            deathCauses.add(dc); // la agrego al registro de causas de muerte
+                            cm.setCauseOfDeath(dc); // se la seteo al CastMember
                         }
                     }
 
-                    peopleHash.put(cm.getImdbNameId(),cm);
+                    peopleHash.put(cm.getImdbNameId(),cm); // agrego el CastMember al Hash de personas
 
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -203,23 +210,23 @@ public class Main {
 
         //Carga de MovieCastMembers
         try {
-            String[] valores;
-            String strCurrentLine;
-            BufferedReader objReader;
-            objReader = new BufferedReader(new InputStreamReader(new FileInputStream("dataset/IMDb title_principals.csv"), "UTF-8"));
+            String[] valores; // array temporal que almacenara una linea leida y procesada por el CSV Reader
+            String strCurrentLine; // la linea en cuestion
+            BufferedReader objReader; // creo instancia de BufferedReader
+            objReader = new BufferedReader(new InputStreamReader(new FileInputStream("dataset/IMDb title_principals.csv"), "UTF-8")); // selecciono archivo en cuestion y su codificacion
             objReader.readLine(); // SALTEO DEL CABEZAL
-            while ((strCurrentLine = objReader.readLine()) != null) {
-                valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-                MovieCastMember movieCM = new MovieCastMember(valores);
-                ArrayListImpl<MovieCastMember> categoryList;
+            while ((strCurrentLine = objReader.readLine()) != null) { // mientras siga habiendo lineas en el archivo
+                valores = strCurrentLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); // split por comas, solo si estan fuera de comillas dobles
+                MovieCastMember movieCM = new MovieCastMember(valores); // creo instancia
+                ArrayListImpl<MovieCastMember> categoryList; // variable que sera una lista con todos los de misma "category" del nuevo movieCM
                 if(categoryHash.contains(movieCM.getCategory())){
-                    categoryList = categoryHash.get(movieCM.getCategory());
+                    categoryList = categoryHash.get(movieCM.getCategory()); // si la "category" ya existe, agrego a esa lista
                 } else {
                     categoryList = new ArrayListImpl<>(1000);
-                    categoryHash.put(movieCM.getCategory() ,categoryList);
+                    categoryHash.put(movieCM.getCategory() ,categoryList); // sino, creo la lista
                 }
 
-                categoryList.add(movieCM);
+                categoryList.add(movieCM); // y agrego el movieCM a la lista recien creada
             }
         }
 
@@ -268,52 +275,53 @@ public class Main {
     }
 
     public static void segundaConsulta() {
-        HashCerrado<String,CastMember> alreadyConsideredPeople = new HashCerrado<>(300000);
-        HashCerrado<CauseOfDeath, CauseOcurrence> deathHash = new HashCerrado<>(5000);
-        ArrayListImpl<MovieCastMember> directors = categoryHash.get("director");
-        ArrayListImpl<MovieCastMember> producers = categoryHash.get("producer");
-        ArrayListImpl<MovieCastMember> dirprod = directors.concatenate(producers);
+        HashCerrado<String,CastMember> alreadyConsideredPeople = new HashCerrado<>(300000); // se crea Hash que contendra las personas que ya fueron consideradas
+        HashCerrado<CauseOfDeath, CauseOcurrence> deathHash = new HashCerrado<>(2500); // se crea hash con causas de muertes y sus respectivas ocurrencias
+        ArrayListImpl<MovieCastMember> directors = categoryHash.get("director"); // ArrayList de directores
+        ArrayListImpl<MovieCastMember> producers = categoryHash.get("producer"); // ArrayList de productores
+        ArrayListImpl<MovieCastMember> dirprod = directors.concatenate(producers); // Concatenacion de las dos anteriores
 
-        for (int i = 0; i < dirprod.size(); i++) {
+        for (int i = 0; i < dirprod.size(); i++) { // itero en la lista
 
-            CastMember person = peopleHash.get(dirprod.get(i).getActorID());
+            CastMember person = peopleHash.get(dirprod.get(i).getActorID()); // puntero temporal a la persona
 
-            if (!alreadyConsideredPeople.contains(person.getImdbNameId())) {
-                if (person.getBirthCountry() != null) {
-                    if (!person.getBirthCountry().equals("") && person.getCauseOfDeath() != null) {
+            if (!alreadyConsideredPeople.contains(person.getImdbNameId())) { // si la persona todavia no fue considerada
+                if (person.getBirthCountry() != null) { // pais de nacimiento no nulo (para evitar inconsistencias)
+                    if (!person.getBirthCountry().equals("") && person.getCauseOfDeath() != null) { // pais de nacimiento no vacio y causa no nula
+                      // con las dos lineas anteriores, se evitan analizar personas con datos incompletos
 
                         if (person.getBirthCountry().contains("USA") || person.getBirthCountry().contains("UK") ||
-                                person.getBirthCountry().contains("Italy") || person.getBirthCountry().contains("France")) {
+                                person.getBirthCountry().contains("Italy") || person.getBirthCountry().contains("France")) { // si la persona nacio en uno de estos 4 paises
 
                             if (deathHash.contains(person.getCauseOfDeath())) { // si la causa de muerte ya esta registrada
                                 CauseOcurrence ocurrence = deathHash.get(person.getCauseOfDeath());
-                                ocurrence.incrementOcurrence();
+                                ocurrence.incrementOcurrence(); // sumo una ocurrencia
                             } else { // si no esta registrada, la creo
                                 CauseOcurrence ocurrence = new CauseOcurrence(person.getCauseOfDeath());
-                                deathHash.put(person.getCauseOfDeath(), ocurrence);
+                                deathHash.put(person.getCauseOfDeath(), ocurrence); // agrego al hash local de causas de muerte
                             }
 
-                            alreadyConsideredPeople.put(person.getImdbNameId(),person);
+                            alreadyConsideredPeople.put(person.getImdbNameId(),person); // como la persona no habia sido considerada aun, la agrego al hash de personas ya consideradas
                         }
                     }
                 }
             }
 
             else {
-                continue;
+                continue; // si la persona ya fue considerada, paso a la siguiente iteracion
             }
         }
 
-        ArrayListImpl<CauseOcurrence> causesWithOcurrence = deathHash.getValues();
+        ArrayListImpl<CauseOcurrence> causesWithOcurrence = deathHash.getValues(); // obtengo las causas de muertes con sus respectivas ocurrencias
 
         try {
-            causesWithOcurrence.sort();
+            causesWithOcurrence.sort(); // ordeno por mergesort, comparando por cantidad de ocurrencias
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
-        for (int i = causesWithOcurrence.size() - 1; i > causesWithOcurrence.size() - 6; i--) {
+        for (int i = causesWithOcurrence.size() - 1; i > causesWithOcurrence.size() - 6; i--) { // devuelvo top 5
             System.out.println("Causa de muerte:" + causesWithOcurrence.get(i).getCause().getName() + "\n" +
                     "Cantidad de personas:" + causesWithOcurrence.get(i).getOcurrence());
         }
@@ -382,76 +390,73 @@ public class Main {
     }
 
     public static void cuartaConsulta() {
-        ArrayListImpl<MovieCastMember> actors = categoryHash.get("actor");
-        ArrayListImpl<MovieCastMember> actresses = categoryHash.get("actress");
-        ArrayListImpl<Year> maleYears = new ArrayListImpl<>(500);
-        ArrayListImpl<Year> femaleYears = new ArrayListImpl<>(500);
-        HashCerrado<Integer, Year> maleYearsHash = new HashCerrado<>(500);
-        HashCerrado<Integer, Year> femaleYearsHash = new HashCerrado<>(500);
-        HashCerrado<String,CastMember> alreadyConsideredPeople = new HashCerrado<>(300000);
+        ArrayListImpl<MovieCastMember> actors = categoryHash.get("actor"); // creo ArrayList filtrando solo actores
+        ArrayListImpl<MovieCastMember> actresses = categoryHash.get("actress"); // creo ArrayList filtrando solo actrices
+        HashCerrado<Integer, Year> maleYearsHash = new HashCerrado<>(500); // creo hash que contendra anos de nacimiento de actores y sus ocurrencias
+        HashCerrado<Integer, Year> femaleYearsHash = new HashCerrado<>(500); // creo hash que contendra anos de nacimiento de actrices y sus ocurrencias
+        HashCerrado<String,CastMember> alreadyConsideredPeople = new HashCerrado<>(300000); // se crea Hash que contendra las personas que ya fueron consideradas
 
+        for (int i = 0; i < actors.size(); i++) { // itero entre actores
 
-        for (int i = 0; i < actors.size(); i++) {
+            CastMember actor = peopleHash.get(actors.get(i).getActorID()); // puntero al actor temporal
 
-            CastMember actor = peopleHash.get(actors.get(i).getActorID());
+            if (!alreadyConsideredPeople.contains(actor.getImdbNameId())) { // si la persona no fue considerada
+                if (actor.getBirthDate() != -1) { // si es -1 es porque el campo estaba vacio
 
-            if (!alreadyConsideredPeople.contains(actor.getImdbNameId())) {
-                if (actor.getBirthDate() != -1) {
-                    //calendar.setTime(actor.getBirthDate());
-                    //int tempYear = calendar.get(Calendar.YEAR);
-                    int tempYear = actor.getBirthDate();
+                    int tempYear = actor.getBirthDate(); // puntero al ano del actor temporal
 
                     if (maleYearsHash.contains(tempYear)) {
-                        Year yearWithOc = maleYearsHash.get(tempYear);
+                        Year yearWithOc = maleYearsHash.get(tempYear); // si el ano ya estaba, le sumo ocurrencia
                         yearWithOc.incrementOcurrencias();
                     } else {
                         Year yearWithOc = new Year(tempYear);
-                        maleYearsHash.put(tempYear, yearWithOc);
+                        maleYearsHash.put(tempYear, yearWithOc); // si no, lo  creo y lo agrego al hash
                     }
 
                 }
-                alreadyConsideredPeople.put(actor.getImdbNameId(), actor);
+                alreadyConsideredPeople.put(actor.getImdbNameId(), actor); // por no estar considerada de antes, la agrego al hash de considerados
             }
             else {
-                continue;
+                continue; // si la persona ya fue considerada, paso a la siguiente iteracion
             }
         }
 
-        ArrayListImpl<Year> menY = maleYearsHash.getValues();
-        menY.sort();
+        ArrayListImpl<Year> menY = maleYearsHash.getValues(); // obtengo anos con sus ocurrencias
+        menY.sort(); // mergesort por ocurrencias
 
-        for (int i = 0; i < actresses.size(); i++) {
+        for (int i = 0; i < actresses.size(); i++) {  // itero entre actrices
 
-            CastMember actress = peopleHash.get(actresses.get(i).getActorID());
+            CastMember actress = peopleHash.get(actresses.get(i).getActorID());  // puntero a la actriz temporal
 
-            if (!alreadyConsideredPeople.contains(actress.getImdbNameId())) {
-                if (actress.getBirthDate() != -1) {
-                    //calendar.setTime(actress.getBirthDate());
-                    //int tempYear = calendar.get(Calendar.YEAR);
-                    int tempYear = actress.getBirthDate();
+            if (!alreadyConsideredPeople.contains(actress.getImdbNameId())) { // si la persona no fue considerada
+                if (actress.getBirthDate() != -1) { // si es -1 es porque el campo estaba vacio
+
+                    int tempYear = actress.getBirthDate(); // puntero al ano de la actriz temporal
 
                     if (femaleYearsHash.contains(tempYear)) {
-                        Year yearWithOc = femaleYearsHash.get(tempYear);
+                        Year yearWithOc = femaleYearsHash.get(tempYear); // si el ano ya estaba, le sumo ocurrencia
                         yearWithOc.incrementOcurrencias();
                     } else {
                         Year yearWithOc = new Year(tempYear);
-                        femaleYearsHash.put(tempYear, yearWithOc);
+                        femaleYearsHash.put(tempYear, yearWithOc); // si no, lo  creo y lo agrego al hash
                     }
                 }
-                alreadyConsideredPeople.put(actress.getImdbNameId(), actress);
+                alreadyConsideredPeople.put(actress.getImdbNameId(), actress); // por no estar considerada de antes, la agrego al hash de considerados
             }
             else {
-                continue;
+                continue; // si la persona ya fue considerada, paso a la siguiente iteracion
             }
         }
 
-        ArrayListImpl<Year> womenY = femaleYearsHash.getValues();
-        womenY.sort();
-        int anoHombres = menY.get(menY.size()-1).getYear();
-        int ocuHombres = menY.get(menY.size()-1).getOcurrencias();
-        int anoMujeres = womenY.get(womenY.size()-1).getYear();
-        int ocuMujeres = womenY.get(womenY.size()-1).getOcurrencias();
+        ArrayListImpl<Year> womenY = femaleYearsHash.getValues(); // obtengo anos con sus ocurrencias
+        womenY.sort(); // mergesort por ocurrencias
 
+        int anoHombres = menY.get(menY.size()-1).getYear(); // obtengo ano con mas actores nacidos
+        int ocuHombres = menY.get(menY.size()-1).getOcurrencias(); // obtengo cantidad de acotres que nacieron ese ano
+        int anoMujeres = womenY.get(womenY.size()-1).getYear(); // obtengo ano con mas actrices nacidos
+        int ocuMujeres = womenY.get(womenY.size()-1).getOcurrencias(); // obtengo cantidad de actrices que nacieron ese ano
+
+        // prints segun la letra
         System.out.println("Actores:");
         System.out.println('\t' + "Año: " + anoHombres);
         System.out.println('\t' + "Cantidad: " + ocuHombres + '\n');
