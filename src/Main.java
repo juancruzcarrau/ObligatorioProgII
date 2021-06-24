@@ -267,7 +267,7 @@ public class Main {
 
     public static void segundaConsulta() {
         HashCerrado<String,CastMember> alreadyConsideredPeople = new HashCerrado<>(300000); // se crea Hash que contendra las personas que ya fueron consideradas
-        HashCerrado<CauseOfDeath, CauseOcurrence> deathHash = new HashCerrado<>(2500); // se crea hash con causas de muertes y sus respectivas ocurrencias
+        HashCerrado<CauseOfDeath, Ocurrencias<CauseOfDeath>> deathHash = new HashCerrado<>(2500); // se crea hash con causas de muertes y sus respectivas ocurrencias
         ArrayListImpl<MovieCastMember> directors = categoryHash.get("director"); // ArrayList de directores
         ArrayListImpl<MovieCastMember> producers = categoryHash.get("producer"); // ArrayList de productores
         ArrayListImpl<MovieCastMember> dirprod = directors.concatenate(producers); // Concatenacion de las dos anteriores
@@ -285,10 +285,10 @@ public class Main {
                                 person.getBirthCountry().contains("Italy") || person.getBirthCountry().contains("France")) { // si la persona nacio en uno de estos 4 paises
 
                             if (deathHash.contains(person.getCauseOfDeath())) { // si la causa de muerte ya esta registrada
-                                CauseOcurrence ocurrence = deathHash.get(person.getCauseOfDeath());
-                                ocurrence.incrementOcurrence(); // sumo una ocurrencia
+                                Ocurrencias<CauseOfDeath> ocurrence = deathHash.get(person.getCauseOfDeath());
+                                ocurrence.incrementarOcurrencias(); // sumo una ocurrencia
                             } else { // si no esta registrada, la creo
-                                CauseOcurrence ocurrence = new CauseOcurrence(person.getCauseOfDeath());
+                                Ocurrencias<CauseOfDeath> ocurrence = new Ocurrencias<>(person.getCauseOfDeath(), 1);
                                 deathHash.put(person.getCauseOfDeath(), ocurrence); // agrego al hash local de causas de muerte
                             }
 
@@ -299,12 +299,12 @@ public class Main {
             }
         }
 
-        ArrayListImpl<CauseOcurrence> causesWithOcurrence = deathHash.getValues(); // obtengo las causas de muertes con sus respectivas ocurrencias
+        ArrayListImpl<Ocurrencias<CauseOfDeath>> causesWithOcurrence = deathHash.getValues(); // obtengo las causas de muertes con sus respectivas ocurrencias
         causesWithOcurrence.sort(); // ordeno por mergesort, comparando por cantidad de ocurrencias
 
         for (int i = causesWithOcurrence.size() - 1; i > causesWithOcurrence.size() - 6; i--) { // devuelvo top 5
-            System.out.println("Causa de muerte:" + causesWithOcurrence.get(i).getCause().getName() + "\n" +
-                    "Cantidad de personas:" + causesWithOcurrence.get(i).getOcurrence());
+            System.out.println("Causa de muerte:" + causesWithOcurrence.get(i).getObject().getName() + "\n" +
+                    "Cantidad de personas:" + causesWithOcurrence.get(i).getOcurrences());
         }
 
     }
@@ -375,8 +375,8 @@ public class Main {
     public static void cuartaConsulta() {
         ArrayListImpl<MovieCastMember> actors = categoryHash.get("actor"); // creo ArrayList filtrando solo actores
         ArrayListImpl<MovieCastMember> actresses = categoryHash.get("actress"); // creo ArrayList filtrando solo actrices
-        HashCerrado<Integer, Year> maleYearsHash = new HashCerrado<>(500); // creo hash que contendra anos de nacimiento de actores y sus ocurrencias
-        HashCerrado<Integer, Year> femaleYearsHash = new HashCerrado<>(500); // creo hash que contendra anos de nacimiento de actrices y sus ocurrencias
+        HashCerrado<Integer, Ocurrencias<Integer>> maleYearsHash = new HashCerrado<>(500); // creo hash que contendra anos de nacimiento de actores y sus ocurrencias
+        HashCerrado<Integer, Ocurrencias<Integer>> femaleYearsHash = new HashCerrado<>(500); // creo hash que contendra anos de nacimiento de actrices y sus ocurrencias
         HashCerrado<String,CastMember> alreadyConsideredPeople = new HashCerrado<>(300000); // se crea Hash que contendra las personas que ya fueron consideradas
 
         for (int i = 0; i < actors.size(); i++) { // itero entre actores
@@ -389,10 +389,10 @@ public class Main {
                     int tempYear = actor.getBirthDate(); // puntero al ano del actor temporal
 
                     if (maleYearsHash.contains(tempYear)) {
-                        Year yearWithOc = maleYearsHash.get(tempYear); // si el ano ya estaba, le sumo ocurrencia
-                        yearWithOc.incrementOcurrencias();
+                        Ocurrencias<Integer> yearWithOc = maleYearsHash.get(tempYear); // si el ano ya estaba, le sumo ocurrencia
+                        yearWithOc.incrementarOcurrencias();
                     } else {
-                        Year yearWithOc = new Year(tempYear);
+                        Ocurrencias<Integer> yearWithOc = new Ocurrencias<>(tempYear, 1);
                         maleYearsHash.put(tempYear, yearWithOc); // si no, lo  creo y lo agrego al hash
                     }
 
@@ -401,7 +401,7 @@ public class Main {
             }
         }
 
-        ArrayListImpl<Year> menY = maleYearsHash.getValues(); // obtengo anos con sus ocurrencias
+        ArrayListImpl<Ocurrencias<Integer>> menY = maleYearsHash.getValues(); // obtengo anos con sus ocurrencias
         menY.sort(); // mergesort por ocurrencias
 
         for (int i = 0; i < actresses.size(); i++) {  // itero entre actrices
@@ -414,10 +414,10 @@ public class Main {
                     int tempYear = actress.getBirthDate(); // puntero al ano de la actriz temporal
 
                     if (femaleYearsHash.contains(tempYear)) {
-                        Year yearWithOc = femaleYearsHash.get(tempYear); // si el ano ya estaba, le sumo ocurrencia
-                        yearWithOc.incrementOcurrencias();
+                        Ocurrencias<Integer> yearWithOc = femaleYearsHash.get(tempYear); // si el ano ya estaba, le sumo ocurrencia
+                        yearWithOc.incrementarOcurrencias();
                     } else {
-                        Year yearWithOc = new Year(tempYear);
+                        Ocurrencias<Integer> yearWithOc = new Ocurrencias<>(tempYear, 1);
                         femaleYearsHash.put(tempYear, yearWithOc); // si no, lo  creo y lo agrego al hash
                     }
                 }
@@ -425,13 +425,13 @@ public class Main {
             }
         }
 
-        ArrayListImpl<Year> womenY = femaleYearsHash.getValues(); // obtengo anos con sus ocurrencias
+        ArrayListImpl<Ocurrencias<Integer>> womenY = femaleYearsHash.getValues(); // obtengo anos con sus ocurrencias
         womenY.sort(); // mergesort por ocurrencias
 
-        int anoHombres = menY.get(menY.size()-1).getYear(); // obtengo ano con mas actores nacidos
-        int ocuHombres = menY.get(menY.size()-1).getOcurrencias(); // obtengo cantidad de acotres que nacieron ese ano
-        int anoMujeres = womenY.get(womenY.size()-1).getYear(); // obtengo ano con mas actrices nacidos
-        int ocuMujeres = womenY.get(womenY.size()-1).getOcurrencias(); // obtengo cantidad de actrices que nacieron ese ano
+        int anoHombres = menY.get(menY.size()-1).getObject(); // obtengo ano con mas actores nacidos
+        int ocuHombres = menY.get(menY.size()-1).getOcurrences(); // obtengo cantidad de acotres que nacieron ese ano
+        int anoMujeres = womenY.get(womenY.size()-1).getObject(); // obtengo ano con mas actrices nacidos
+        int ocuMujeres = womenY.get(womenY.size()-1).getOcurrences(); // obtengo cantidad de actrices que nacieron ese ano
 
         // prints segun la letra
         System.out.println("Actores:");
