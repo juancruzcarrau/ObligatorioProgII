@@ -26,7 +26,6 @@ public class Main {
 
     // movie cast members
     static HashCerrado<String, ArrayListImpl<MovieCastMember>> categoryHash = new HashCerrado<>(15);
-    static Calendar calendar = new GregorianCalendar();
 
     public static void main(String[] args){
 
@@ -170,13 +169,13 @@ public class Main {
 
         //Carga de castMembers y causas de muerte
         try (CSVReader csvReader = new CSVReaderBuilder(new FileReader("dataset/IMDb names.csv")).withSkipLines(1).build()) {  // creo instancia de CSV Reader que lee el archivo en cuestion
-            String[] valores = null; // array temporal que almacenara una linea leida y procesada por el CSV Reader
+            String[] valores; // array temporal que almacenara una linea leida y procesada por el CSV Reader
 
             while ((valores = csvReader.readNext()) != null) { // mientras siga habiendo lineas en el archivo
 
                 try {
                     CastMember cm = new CastMember(valores); // creo intancia
-                    CauseOfDeath dc = null; // declaro variable
+                    CauseOfDeath dc; // declaro variable
 
                     if (deathCauses.contains(valores[11])) { // si ya esta registrada
                         cm.setCauseOfDeath(deathCauses.get(valores[11])); // puntero a la causa de muerte ya registrada
@@ -255,7 +254,7 @@ public class Main {
             //Se itera en los ultimos  valores de la ArrayList ordenada y se imprime la informacion
             CastMember castMember = peopleHash.get(aparicionesList.get(i).getObject().getActorID());
             System.out.println("Nombre actor/actriz: " + castMember.getName());
-            System.out.println("Cantidad de apariciones: " + aparicionesList.get(i).getOcurrences());
+            System.out.println("Cantidad de apariciones: " + aparicionesList.get(i).getOcurrences() + "\n");
         }
     }
 
@@ -297,8 +296,8 @@ public class Main {
         causesWithOcurrence.sort(); // ordeno por mergesort, comparando por cantidad de ocurrencias
 
         for (int i = causesWithOcurrence.size() - 1; i > causesWithOcurrence.size() - 6; i--) { // devuelvo top 5
-            System.out.println("Causa de muerte:" + causesWithOcurrence.get(i).getObject().getName() + "\n" +
-                    "Cantidad de personas:" + causesWithOcurrence.get(i).getOcurrences());
+            System.out.println("Causa de muerte:" + causesWithOcurrence.get(i).getObject().getName());
+            System.out.println("Cantidad de personas:" + causesWithOcurrence.get(i).getOcurrences() + "\n");
         }
 
     }
@@ -359,7 +358,7 @@ public class Main {
             if (amountOfActors != 0){       //Si tiene al menos un actor que tiene una altura distinta de cero, se imprime sus datos
                 System.out.println("Id película: " + moviesInYears.get(i).getImbdTitleId());
                 System.out.println("Nombre: " + moviesInYears.get(i).getTitle());
-                System.out.println("Altura promedio de actores: " + heightSum/(double) amountOfActors); //Se hace el promedio haciendo la suma de altura de actores divido la cantidad de actores cuyas alturas eran distintas de 0
+                System.out.println("Altura promedio de actores: " + heightSum/(double) amountOfActors + "\n"); //Se hace el promedio haciendo la suma de altura de actores divido la cantidad de actores cuyas alturas eran distintas de 0
             }
 
         }
@@ -433,7 +432,7 @@ public class Main {
         System.out.println('\t' + "Cantidad: " + ocuHombres + '\n');
         System.out.println("Actrices:");
         System.out.println('\t' + "Año: " + anoMujeres);
-        System.out.println('\t' + "Cantidad: " + ocuMujeres);
+        System.out.println('\t' + "Cantidad: " + ocuMujeres + '\n');
     }
 
     private static void quintaConsulta(){
@@ -472,7 +471,7 @@ public class Main {
 
         for (int i = listaOcurrencias.size() - 1; i > listaOcurrencias.size() - 11; i--) {  //Se itera en los ultimos 10 y se imprimen los ultimos 10
             System.out.println("Genero pelicula:" + listaOcurrencias.get(i).getObject());
-            System.out.println("Cantidad:" + listaOcurrencias.get(i).getOcurrences());
+            System.out.println("Cantidad:" + listaOcurrencias.get(i).getOcurrences() + '\n');
         }
     }
 
